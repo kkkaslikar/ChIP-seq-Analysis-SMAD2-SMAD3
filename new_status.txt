@@ -1,0 +1,46 @@
+On branch master
+
+Initial commit
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+
+	new file:   .Rhistory
+	new file:   Bioinfo_Analysis.Rmd
+	new file:   Bioinfo_Analysis.pdf
+	new file:   Bioinfo_Analysis.tex
+	new file:   Bioinfo_Analysis_files/figure-latex/unnamed-chunk-10-1.pdf
+	new file:   Bioinfo_Analysis_files/figure-latex/unnamed-chunk-12-1.pdf
+	new file:   Bioinfo_Analysis_files/figure-latex/unnamed-chunk-14-1.pdf
+	new file:   Bioinfo_Analysis_files/figure-latex/unnamed-chunk-16-1.pdf
+	new file:   Bioinfo_Analysis_files/figure-latex/unnamed-chunk-18-1.pdf
+	new file:   Bioinfo_Analysis_files/figure-latex/unnamed-chunk-20-1.pdf
+	new file:   Bioinfo_Analysis_files/figure-latex/unnamed-chunk-22-1.pdf
+	new file:   Bioinfo_Analysis_files/figure-latex/unnamed-chunk-24-1.pdf
+	new file:   Bioinfo_Analysis_files/figure-latex/unnamed-chunk-26-1.pdf
+	new file:   Bioinfo_Analysis_files/figure-latex/unnamed-chunk-5-1.pdf
+	new file:   Bioinfo_Analysis_files/figure-latex/unnamed-chunk-6-1.pdf
+	new file:   Bioinfo_Analysis_files/figure-latex/unnamed-chunk-7-1.pdf
+	new file:   Bioinfo_Analysis_files/figure-latex/unnamed-chunk-8-1.pdf
+	new file:   SMAD2_abInput_treated_peaks.narrowPeak
+	new file:   SMAD2_abInput_untreated_peaks.narrowPeak
+	new file:   SMAD3_LAP_treated_peaks.narrowPeak
+	new file:   SMAD3_LAP_untreated_peaks.narrowPeak
+	new file:   overall_analysis.R
+	new file:   overall_analysis.RData
+	new file:   plot-ranges.R
+	new file:   status.txt
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	modified:   overall_analysis.R
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	.Rproj.user/
+	Bioinfo_Analysis.Rproj
+	new_status.txt
+
