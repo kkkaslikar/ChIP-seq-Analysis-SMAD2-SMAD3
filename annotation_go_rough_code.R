@@ -196,9 +196,8 @@ dotplot(gen_ego_SMAD3_LAP_treated_peaks )+ ggtitle(label = "Enriched BP GO Terms
 
 
 
-# save.image(file = "overall_analysis.RData")
-
 anti_join(gen_ego_SMAD2_abInput_treated_peaks@result %>% filter(p.adjust<0.05) %>% dplyr::select(Description), ego_SMAD2_abInput_treated_peaks@result %>% filter(p.adjust<0.05) %>% dplyr::select(Description)) %>% rename(Description = "Different Terms")
 
 
 ego_SMAD2_abInput_treated_peaks@result %>% as_tibble() %>% filter(p.adjust<0.05)
+

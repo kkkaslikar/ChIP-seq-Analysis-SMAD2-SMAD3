@@ -58,7 +58,7 @@ library(kableExtra)
 
 
 ```{r eval = TRUE, echo=TRUE}
-load("annotation_go_rough_code.RData")
+load("annotation_go_results.RData")
 
 ```
 
@@ -215,8 +215,10 @@ for(i in seq_along(ego_v)){
   if(!nrow(as.data.frame(ego)) == 0) 
     assign(x = ego_v[i], value = ego)}
 
+```
 
 
+```{r eval=FALSE, tidy = TRUE, echo=TRUE}
 ### Vector of variable names for go term enrichment objects limited to promoter peaks
 
 prom_ego_v <- ego_v <- paste0("prom_ego_", v) 
@@ -247,6 +249,8 @@ for(i in seq_along(gen_ego_v)){
     assign(x = gen_ego_v[i], value = ego)}
 
 
+rm(ego) ## removing unnecessary variable ego
+
 ```
 
 
@@ -255,7 +259,7 @@ Results of analysis were saved in the following file:
 
 
 ```{r}
-save.image(file = "annotation_go_rough_code.RData")
+save.image(file = "annotation_go_results.RData")
 ```
 
 
@@ -332,8 +336,6 @@ ego_SMAD2_abInput_treated_peaks@result %>%
   head(20) %>% 
   rename(Description = "Enriched GO Terms in Treated SMAD2 Peaks") %>% 
   kable(x = ., "latex", longtable = T) %>% kable_styling(latex_options = c("repeat_header"))
-
-
 ```
 
 \clearpage{}
