@@ -1,0 +1,242 @@
+---
+title: "Investigating Ambiguous Gene Ranges"
+author: "Kaushal K. Kaslikar (A0138855R)"
+date: "9/25/2019"
+output: 
+  html_document:
+    number_sections: true
+    df_print: kable
+    toc: true
+    toc_depth: 3  
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Purpose
+
+The prior analysis of differentially-enriched peaks revealed genes whose promoters simultaneously contained regions which were differentially enriched for Smad2, differentially enriched for Smad3 and not particularly enriched for either. Such genes were termed ambiguous genes and it was hypothesised that the these regions would be non-overlapping, representing binding sites within the same gene promoter with different affinity for Smad2 or Smad3. This analysis is an attempt to verify that hypothesis.
+
+
+
+```{r libraries, results='hide', warning=FALSE, message=FALSE, eval=TRUE}
+library(tidyverse)
+library(GenomicRanges)
+library(ChIPseeker)
+library(Gviz)
+library(BSgenome.Hsapiens.UCSC.hg38)
+```
+
+# Extracting ranges corresponding to ambiguous genes 
+
+The relevant objects from the differential binding analysis workspace were previously saved to "Gviz_motif.RData".
+
+
+
+```{r results='hide', warning=FALSE, message=FALSE, eval=FALSE}
+
+save( list = c("df_ls2_vs_ls3_bothenriched", "df_ls2_vs_ls3_smad2enriched", "df_ls2_vs_ls3_smad3enriched", "df_ls2_vs_ns3_bothenriched", "df_ls2_vs_ns3_smad2enriched", "df_ls2_vs_ns3_smad3enriched", "ambi_ls2_vs_ls3", "ambi_ls2_vs_ns3"), file = "Gviz_motif.RData")
+
+
+```
+
+
+These objects were then loaded into the current workspace for analysis.
+
+```{r}
+load("Gviz_motif.RData")
+```
+
+The variable `ambi_ls2_vs_ns3` contained the geneIds for the ambiguous genes in the form of a character vector. These geneIds were used to filter the annotated peak dataframes to obtain range information pertaining only to these ambiguous genes. This information was then used to construct the Grange objects for the peaks differentially-enriched for the respective Smad. This entire process was encapsulated in the form of the function `range_extract`. 
+
+
+
+```{r}
+
+range_extract <- function(ambi_list, df){ # ambi_list = ambiguous gene vector, df = annotation dataframe
+  ## extracts subset of annotation dataframe corresponding to ambiguous genes
+  df_ambi_subset <- df %>% 
+    filter(geneId %in% ambi_list, str_detect(string = annotation, pattern = "Promoter"))
+  
+  # creates ranges based on data from the ambiguous gene data frame subset
+  
+  ranges <- GRanges(seqnames = df_ambi_subset$seqnames, ranges = IRanges(start = df_ambi_subset$start, df_ambi_subset$end), strand = df_ambi_subset$strand, GENENAME = df_ambi_subset$GENENAME, SYMBOL = df_ambi_subset$SYMBOL, log10_LR = df_ambi_subset$log10_LR,geneId = df_ambi_subset$geneId, distanceToTSS = df_ambi_subset$distanceToTSS)
+  
+  return(ranges)
+}
+
+```
+
+
+
+Using the function, a GrangesList object `ambi_ranges_ls2_vs_ns3` was created, the first element of which was a Granges object containing peaks enriched for Smad2 and the second element of which was a Granges object containing peaks enriched for Smad3.
+
+
+```{r}
+
+ambi_ranges_ls2_vs_ns3 <- GRangesList(range_extract(ambi_list = ambi_ls2_vs_ns3, df = df_ls2_vs_ns3_smad2enriched), range_extract(ambi_list = ambi_ls2_vs_ns3, df = df_ls2_vs_ns3_smad3enriched))
+
+# naming granges list elements for easier access and identification
+
+names(ambi_ranges_ls2_vs_ns3) <- c("Smad2", "Smad3")
+```
+
+# Analysis of ambiguous gene ranges
+
+
+First, the Granges corresponding to Smad2 and Smad3 respectively were compared to each other to find any overlapping ranges. None were found, strengthening the hypothesis that the differential binding regions for each Smad within a gene promoter were non-overlapping.
+
+
+```{r}
+findOverlaps(query = ambi_ranges_ls2_vs_ns3$Smad2, subject = ambi_ranges_ls2_vs_ns3$Smad3)
+
+```
+
+
+## Plotting ranges
+
+The chromosomes 6, 9, 10 and 21 were found to be common among both sets of Smad-exclusive ranges corresponding to the different Smads.
+
+
+
+```{r}
+seqnames(ambi_ranges_ls2_vs_ns3)
+```
+
+
+
+
+```{r}
+
+# creating annotation tracks for Gviz from individual grange list elements
+
+smad2_track <- AnnotationTrack(range = ambi_ranges_ls2_vs_ns3$Smad2, name="Smad2")
+
+smad3_track <- AnnotationTrack(range = ambi_ranges_ls2_vs_ns3$Smad3, name="Smad3")
+
+
+# creating genome axis track
+
+gtrack <- GenomeAxisTrack()
+
+```
+
+The ranges on chromosome 6 for Smad2 and Smad 3 were a fair distance apart, but still lay within the promoter of one gene,  `forkhead box P4`.
+
+
+```{r fig.cap= "Chromosome 6 Ranges",}
+plotTracks(trackList = c(gtrack, smad2_track, smad3_track, IdeogramTrack(chromosome = "chr6", genome = "hg38")), chromosome = "chr6")
+```
+
+
+
+
+
+```{r message=FALSE, warning=FALSE}
+ambi_ranges_ls2_vs_ns3$Smad2[seqnames(ambi_ranges_ls2_vs_ns3$Smad2) == "chr6"] %>% 
+  mcols() %>% 
+  as_tibble() %>%
+  mutate(TF = "Smad2") %>% 
+full_join(x = ., y = (ambi_ranges_ls2_vs_ns3$Smad3[seqnames(ambi_ranges_ls2_vs_ns3$Smad3) == "chr6"] %>% mcols() %>% as_tibble()) %>% mutate(TF = "Smad3")) %>% 
+    dplyr::select(GENENAME, SYMBOL, TF, distanceToTSS, everything()) %>%
+  arrange(GENENAME, distanceToTSS)
+  # knitr::kable()
+```
+
+
+The ranges on chromosome 9 for Smad2 and Smad3 were in completely distinct chromosome regions which were a large distance apart, and were located in promoters of completely different genes.
+
+
+```{r fig.cap="Chromosome 9 Ranges"}
+
+plotTracks(trackList = c(gtrack, smad2_track, smad3_track, IdeogramTrack(chromosome = "chr9", genome = "hg38")), chromosome = "chr9")
+
+```
+
+
+
+
+
+```{r message=FALSE, warning=FALSE}
+
+ambi_ranges_ls2_vs_ns3$Smad2[seqnames(ambi_ranges_ls2_vs_ns3$Smad2) == "chr9"] %>% 
+  mcols() %>% 
+  as_tibble() %>%
+  mutate(TF = "Smad2") %>% 
+  full_join(x = ., y = (ambi_ranges_ls2_vs_ns3$Smad3[seqnames(ambi_ranges_ls2_vs_ns3$Smad3) == "chr9"] %>% mcols() %>% as_tibble()) %>% mutate(TF = "Smad3")) %>% 
+  dplyr::select(GENENAME, SYMBOL, TF, distanceToTSS, everything()) %>%
+  arrange(GENENAME, distanceToTSS)
+  # knitr::kable()
+
+
+
+```
+
+The ranges on Chromosome 10 were located far apart within the promoter of the same gene, `zinc finger MIZ-type containing 1`. 
+
+
+
+```{r fig.cap="Chromosome 10 Ranges"}
+plotTracks(trackList = c(gtrack, smad2_track, smad3_track, IdeogramTrack(chromosome = "chr10", genome = "hg38")), chromosome = "chr10")
+```
+
+
+
+```{r message=FALSE, warning=FALSE}
+ambi_ranges_ls2_vs_ns3$Smad2[seqnames(ambi_ranges_ls2_vs_ns3$Smad2) == "chr10"] %>% 
+  mcols() %>% 
+  as_tibble() %>%
+  mutate(TF = "Smad2") %>% 
+  full_join(x = ., y = (ambi_ranges_ls2_vs_ns3$Smad3[seqnames(ambi_ranges_ls2_vs_ns3$Smad3) == "chr10"] %>% mcols() %>% as_tibble()) %>% mutate(TF = "Smad3")) %>% 
+  dplyr::select(GENENAME, SYMBOL, TF, distanceToTSS, everything()) %>%  
+  arrange(GENENAME, distanceToTSS)
+  # knitr::kable()
+```
+
+
+The ranges within Chromosome 21 came the closest to overlapping. However, upon zooming in, closer inspection revealed that these regions of Smad2 and Smad3 differential enrichment were adjacent to each other, with peaks from the two Smads occurring in an alternating fashion. 
+
+In addition, there was also a Smad3-exclusive set of ranges beyond 9.5 mb. 
+
+
+```{r fig.cap="Chromosome 21 Ranges"}
+plotTracks(trackList = c(gtrack, smad2_track, smad3_track, IdeogramTrack(chromosome = "chr21", genome = "hg38")), chromosome = "chr21")
+```
+
+
+
+
+```{r fig.cap="Chromosome 21 Ranges; Close-up from 8.199 mb to  8.261 mb"}
+plotTracks(trackList = c(gtrack, smad2_track, smad3_track, IdeogramTrack(chromosome = "chr21", genome = "hg38")), chromosome = "chr21", from = 8.199*10^6, to = 8.22*10^6)
+
+
+
+```
+
+
+```{r fig.cap="Chromosome 21 Ranges; Close-up from 8.42 mb to  8.455 mb"}
+plotTracks(trackList = c(gtrack, smad2_track, smad3_track, IdeogramTrack(chromosome = "chr21", genome = "hg38")), chromosome = "chr21", from = 8.42*10^6, to = 8.45*10^6) 
+```
+
+
+There were 5 different gene promoters on Chromosome 21, which contained both Smad2 and Smad3 differentially enriched regions. There was only one gene whose promoter did not contain Smad2 differentially enriched regions, `long intergenic non-protein coding RNA 1667`.
+
+
+
+```{r message=FALSE, warning=FALSE}
+ambi_ranges_ls2_vs_ns3$Smad2[seqnames(ambi_ranges_ls2_vs_ns3$Smad2) == "chr21"] %>% 
+  mcols() %>% 
+  as_tibble() %>%
+  mutate(TF = "Smad2") %>% 
+  full_join(x = ., y = (ambi_ranges_ls2_vs_ns3$Smad3[seqnames(ambi_ranges_ls2_vs_ns3$Smad3) == "chr21"] %>% mcols() %>% as_tibble()) %>% mutate(TF = "Smad3")) %>% 
+  dplyr::select(GENENAME, SYMBOL, TF, distanceToTSS, everything()) %>% 
+  arrange(GENENAME, distanceToTSS) 
+  # knitr::kable()
+```
+
+
+
