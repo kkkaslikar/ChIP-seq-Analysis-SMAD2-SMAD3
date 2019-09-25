@@ -173,8 +173,42 @@ mcols(ambi_ranges_ls2_vs_ns3$Smad3)[mcols(ambi_ranges_ls2_vs_ns3$Smad3)$GENENAME
 # getting-bed-files-for-motif-analysis -------------------------------------------------
 
 
-ambi_ranges_ls2_vs_ns3$Smad2 %>% as.data.frame() %>% as_tibble()
 
 
+
+df_ambi_ranges_ls2_vs_ns3_smad2 <- ambi_ranges_ls2_vs_ns3$Smad2 %>% as.data.frame() %>% as_tibble()
+
+vs2 <- df_ambi_ranges_ls2_vs_ns3_smad2 %>% dplyr::select(GENENAME) %>% unlist()
+
+
+
+unique_peak_id_s2 <- vector(mode = "character", length = 0)
+
+for(i in seq_along(vs2)){
+  unique_peak_id_s2 <- append(unique_peak_id_s2, paste(vs2[i], sum(vs2[1:i] == vs2[i]), sep = "--"))
+}
+
+
+df_ambi_ranges_ls2_vs_ns3_smad2 <- df_ambi_ranges_ls2_vs_ns3_smad2 %>% 
+  mutate(unique_peak_id = unique_peak_id_s2, blank = "", strand = ".")
+
+###
+
+df_ambi_ranges_ls2_vs_ns3_smad3 <- ambi_ranges_ls2_vs_ns3$Smad3 %>% as.data.frame() %>% as_tibble()
+
+vs3 <- df_ambi_ranges_ls2_vs_ns3_smad3 %>% dplyr::select(GENENAME) %>% unlist()
+
+unique_peak_id_s3 <- vector(mode = "character", length = 0)
+
+for(i in seq_along(vs3)){
+  unique_peak_id_s3 <- append(unique_peak_id_s3, paste(vs3[i], sum(vs3[1:i] == vs3[i]), sep = "--"))
+}
+
+df_ambi_ranges_ls2_vs_ns3_smad3 <- df_ambi_ranges_ls2_vs_ns3_smad3 %>% 
+  mutate(unique_peak_id = unique_peak_id_s2, blank = "", strand = ".")
+
+write_tsv(x = df_ambi_ranges_ls2_vs_ns3_smad2 %>% dplyr::select(seqnames, start, end, unique_peak_id, blank, strand), path = "ambi_ranges_ls2_vs_ns3_Smad2.bed" , col_names = FALSE)
+
+write_tsv(x = df_ambi_ranges_ls2_vs_ns3_smad3 %>% dplyr::select(seqnames, start, end, unique_peak_id, blank, strand), path = "ambi_ranges_ls2_vs_ns3_Smad3.bed", col_names = FALSE )
 
 
