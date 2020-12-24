@@ -1,9 +1,12 @@
 ---
 title: "ChIP-seq Analysis of TGF-beta Treated SMAD2 and SMAD3 Peaks"
 output:
-  pdf_document:
-    keep_tex: true
-documentclass: article
+  html_notebook:
+    toc: true
+    toc_float:
+      smooth_scroll: true
+      collapsed: true
+    number_sections: true
 ---
 
 
@@ -143,17 +146,25 @@ A character vector of variable names was created to hold the annotated peak obje
 ```{r, eval = FALSE, tidy=TRUE, echo=TRUE}
 ap_v <- paste0("AP_", v) ## variable names for annotated peak objects
 
-
+ap_v
 ### Create annotated peak objects and assign them to names in ap_v
+```
 
+```{r, eval = FALSE, tidy=TRUE, echo=TRUE}
 for(i in seq_along(grl)){
   assign(x = ap_v[i], value = annotatePeak(peak = grl[[i]], TxDb = TxDb, annoDb = "org.Hs.eg.db"))
 }
 
+AP_SMAD2_abInput_treated_peaks
+```
 
+```{r, eval = FALSE, tidy=TRUE, echo=TRUE}
 df_ap_v <- paste0("df_", ap_v) ## variable names for tibbles derived from annotated peaks
 
+df_ap_v
+```
 
+```{r, eval = FALSE, tidy=TRUE, echo=TRUE}
 ### Create tibbles from annotated peak objects listed in ap_v and assign them to names in df_ap_v
 
 for(i in seq_along(ap_v)){
@@ -163,11 +174,18 @@ for(i in seq_along(ap_v)){
            as_tibble()) 
 }
 
+df_AP_SMAD2_abInput_treated_peaks
+
+```
+
+```{r, eval = FALSE, tidy=TRUE, echo=TRUE}
 ## variable names for tibbles derived from annotated peaks limited to promoter annotations
 
 prom_df_ap_v <- paste0("prom_df_", ap_v) 
+prom_df_ap_v
+```
 
-
+```{r, eval = FALSE, tidy=TRUE, echo=TRUE}
 ### Create subset of tibbles from variable names listed in df_ap_v and assign them to variable names in prom_df_ap_v
 for(i in seq_along(df_ap_v)){
   assign(x = prom_df_ap_v[i], value = parse(text = df_ap_v[i]) %>% 
@@ -175,11 +193,15 @@ for(i in seq_along(df_ap_v)){
            filter(str_detect(annotation, "Promoter")))
 }
 
+prom_df_AP_SMAD2_abInput_treated_peaks
+
+```
+```{r, eval = FALSE, tidy=TRUE, echo=TRUE}
 ## variable names for tibbles derived from annotated peaks limited to gene region annotations
 
 gen_df_ap_v <- paste0("gen_df_", ap_v) 
 
-
+gen_df_ap_v
 ### Filter tibbles with variable names listed in df_ap_v to discard rows with "Distal Intergenic" or "Downstream" annotations and assign them to names in gen_df_ap_v. 
 
 for(i in seq_along(df_ap_v)){
@@ -187,6 +209,8 @@ for(i in seq_along(df_ap_v)){
            eval() %>% 
            filter(!str_detect(annotation, "Distal Intergenic|Downstream")))
 }
+
+gen_df_AP_SMAD3_LAP_treated_peaks
 
 ```
 
@@ -212,6 +236,12 @@ for(i in seq_along(ego_v)){
   if(!nrow(as.data.frame(ego)) == 0) 
     assign(x = ego_v[i], value = ego)}
 
+rm(ego)
+```
+
+
+```{r eval=FALSE, tidy = TRUE, echo=TRUE}
+ego_SMAD2_abInput_treated_peaks
 ```
 
 
@@ -220,15 +250,29 @@ for(i in seq_along(ego_v)){
 
 prom_ego_v <- ego_v <- paste0("prom_ego_", v) 
 
+prom_ego_v
+
+```
+
+```{r eval=FALSE, tidy = TRUE, echo=TRUE}
+
 ### Performing go term analysis using the clusterprofiler package and assigning the results to the variables in gen_ego_v
 
 for(i in seq_along(prom_ego_v)){ 
   ego <- parse(text = prom_df_ap_v[i]) %>% 
-    eval(expr = .) %>% dplyr::select(geneId) %>% 
+    eval(expr = .) %>% 
+    dplyr::select(geneId) %>% 
     unlist() %>% 
     enrichGO(gene = ., OrgDb = org.Hs.eg.db, ont = "BP", pAdjustMethod = "BH", readable = TRUE)
   if(!nrow(as.data.frame(ego)) == 0) 
     assign(x = prom_ego_v[i], value = ego)}
+
+prom_ego_SMAD2_abInput_treated_peaks
+
+```
+
+
+```{r eval=FALSE, tidy = TRUE, echo=TRUE}
 
 ### Vector of variable names for go term enrichment objects limited to genic region peaks
 
@@ -262,7 +306,6 @@ save.image(file = "annotation_go_results.RData")
 
 
 # Results
-
 
 ## Peak Annotation Results
 
@@ -331,8 +374,7 @@ ego_SMAD2_abInput_treated_peaks@result %>%
   arrange(p.adjust, desc(Count), desc(GeneRatio)) %>% filter(p.adjust < 0.05) %>%  
   dplyr::select(Description, p.adjust, GeneRatio, BgRatio) %>% 
   head(20) %>% 
-  rename(Description = "Enriched GO Terms in Treated SMAD2 Peaks") %>% 
-  kable(x = ., "latex", longtable = T) %>% kable_styling(latex_options = c("repeat_header"))
+  rename(Description = "Enriched GO Terms in Treated SMAD2 Peaks")
 ```
 
 \clearpage{}
@@ -358,15 +400,16 @@ ego_SMAD3_LAP_untreated_peaks@result %>%
   filter(p.adjust < 0.05) %>%  
   dplyr::select(Description, p.adjust, GeneRatio, BgRatio) %>% 
   head(20) %>% 
-  rename(Description = "Enriched GO Terms in Untreated SMAD3 Peaks") %>% 
-kable( x = ., "latex", longtable = T) %>% kable_styling(latex_options = c("repeat_header"))
+  rename(Description = "Enriched GO Terms in Untreated SMAD3 Peaks")
 ```
 
 \clearpage{}
 
 
 ```{r}
-dotplot(ego_SMAD3_LAP_untreated_peaks) + ggtitle(label = "Enriched BP GO Terms in Untreated SMAD3 Peaks") + theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
+dotplot(ego_SMAD3_LAP_untreated_peaks) + 
+  ggtitle(label = "Enriched BP GO Terms in Untreated SMAD3 Peaks") + 
+  theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
 ```
 
 \clearpage{}
@@ -383,16 +426,16 @@ ego_SMAD3_LAP_treated_peaks@result %>%
   filter(p.adjust < 0.05) %>%  
   dplyr::select(Description, p.adjust, GeneRatio, BgRatio) %>% 
   head(20) %>% 
-  rename(Description = "Enriched GO Terms in Treated SMAD3 Peaks") %>%
-  kable(x = ., "latex", longtable = T) %>% 
-  kable_styling(latex_options = c("repeat_header"))
+  rename(Description = "Enriched GO Terms in Treated SMAD3 Peaks")
 ```
 
 \clearpage{}
 
 
 ```{r}
-dotplot(ego_SMAD3_LAP_treated_peaks) + ggtitle(label = "Enriched BP GO Terms in Treated SMAD3 Peaks") + theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
+dotplot(ego_SMAD3_LAP_treated_peaks) + 
+  ggtitle(label = "Enriched BP GO Terms in Treated SMAD3 Peaks") + 
+  theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
 
 ```
 
@@ -410,9 +453,7 @@ gen_ego_SMAD2_abInput_treated_peaks@result %>%
   filter(p.adjust < 0.05) %>%  
   dplyr::select(Description, p.adjust, GeneRatio, BgRatio) %>% 
   head(20) %>% 
-  rename(Description = "Enriched GO Terms in Treated SMAD2 Peaks Restricted to Gene Regions") %>% 
-  kable(x = ., "latex", longtable = T) %>% 
-  kable_styling(latex_options = c("repeat_header"))
+  rename(Description = "Enriched GO Terms in Treated SMAD2 Peaks Restricted to Gene Regions")
 ```
 
 \clearpage{}  
@@ -435,9 +476,7 @@ gen_ego_SMAD3_LAP_untreated_peaks@result %>%
   filter(p.adjust < 0.05) %>%  
   dplyr::select(Description, p.adjust, GeneRatio, BgRatio) %>% 
   head(20) %>% 
-  rename(Description = "Enriched GO Terms in Untreated SMAD3 Peaks Restricted to Gene Regions") %>% 
-  kable(x = ., "latex", longtable = T) %>% 
-  kable_styling(latex_options = c("repeat_header"))
+  rename(Description = "Enriched GO Terms in Untreated SMAD3 Peaks Restricted to Gene Regions")
 ```
 
 
@@ -446,7 +485,9 @@ gen_ego_SMAD3_LAP_untreated_peaks@result %>%
 
 ```{r}
 
-dotplot(gen_ego_SMAD3_LAP_untreated_peaks ) + ggtitle(label = "Enriched BP GO Terms in Untreated SMAD3 Genic Peaks") + theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
+dotplot(gen_ego_SMAD3_LAP_untreated_peaks ) + 
+  ggtitle(label = "Enriched BP GO Terms in Untreated SMAD3 Genic Peaks") + 
+  theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
 
 ```
 
@@ -457,13 +498,19 @@ Treated SMAD3 peaks in gene regions did not show too many chages either, as comp
 
 
 ```{r}
-kable(gen_ego_SMAD3_LAP_treated_peaks@result %>% as_tibble() %>% arrange(p.adjust, desc(Count) , desc(GeneRatio))  %>% filter(p.adjust < 0.05) %>%  dplyr::select(Description, p.adjust, GeneRatio, BgRatio) %>% head(20) %>% rename(Description = "Enriched GO Terms in Treated SMAD3 Peaks Restricted to Gene Regions"), "latex", longtable = T) %>% kable_styling(latex_options = c("repeat_header"))
+gen_ego_SMAD3_LAP_treated_peaks@result %>% 
+  as_tibble() %>% 
+  arrange(p.adjust, desc(Count) , desc(GeneRatio))  %>% filter(p.adjust < 0.05) %>%  dplyr::select(Description, p.adjust, GeneRatio, BgRatio) %>% 
+  head(20) %>% 
+  rename(Description = "Enriched GO Terms in Treated SMAD3 Peaks Restricted to Gene Regions")
 ```
 
 \clearpage{}
 
 ```{r}
-dotplot(gen_ego_SMAD3_LAP_treated_peaks )+ ggtitle(label = "Enriched BP GO Terms in Treated SMAD3 Genic Peaks") + theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
+dotplot(gen_ego_SMAD3_LAP_treated_peaks ) + 
+  ggtitle(label = "Enriched BP GO Terms in Treated SMAD3 Genic Peaks") + 
+  theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
 
 ```
 
@@ -482,9 +529,7 @@ prom_ego_SMAD2_abInput_untreated_peaks@result %>%
   filter(p.adjust < 0.05) %>%  
   dplyr::select(Description, p.adjust, GeneRatio, BgRatio) %>% 
   head(20) %>% 
-  rename(Description = "Enriched GO Terms in Untreated SMAD2 Peaks Restricted to Promoters") %>% 
-  kable(x = ., "latex", longtable = T) %>% 
-  kable_styling(latex_options = c("repeat_header"))
+  rename(Description = "Enriched GO Terms in Untreated SMAD2 Peaks Restricted to Promoters")
 ```
 
 \clearpage{}
@@ -505,15 +550,16 @@ prom_ego_SMAD3_LAP_untreated_peaks@result %>%
   filter(p.adjust < 0.05) %>%  
   dplyr::select(Description, p.adjust, GeneRatio, BgRatio) %>% 
   head(20) %>% 
-  rename(Description = "Enriched GO Terms in Untreated SMAD3 Peaks Restricted to Promoters") %>% 
-  kable(x = . , "latex", longtable = T) %>% kable_styling(latex_options = c("repeat_header"))
+  rename(Description = "Enriched GO Terms in Untreated SMAD3 Peaks Restricted to Promoters")
 ```
 
 \clearpage{}
 
 
 ```{r}
-dotplot(prom_ego_SMAD3_LAP_untreated_peaks) + ggtitle(label = "Enriched BP GO Terms in Untreated SMAD3 Promoter Peaks") + theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
+dotplot(prom_ego_SMAD3_LAP_untreated_peaks) + 
+  ggtitle(label = "Enriched BP GO Terms in Untreated SMAD3 Promoter Peaks") + 
+  theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
 
 ```
 
@@ -522,8 +568,6 @@ dotplot(prom_ego_SMAD3_LAP_untreated_peaks) + ggtitle(label = "Enriched BP GO Te
 
 Treatment with ligand seemed to show many more enriched GO terms in promoter-restricted SMAD3 peaks, as compared to untreated promoter-restricted SMAD3 peaks. 
 
-
-
 ```{r}
 prom_ego_SMAD3_LAP_treated_peaks@result %>% 
   as_tibble() %>% 
@@ -531,15 +575,15 @@ prom_ego_SMAD3_LAP_treated_peaks@result %>%
   filter(p.adjust < 0.05) %>%  
   dplyr::select(Description, p.adjust, GeneRatio, BgRatio) %>% 
   head(20) %>%
-  rename(Description = "Enriched GO Terms in Treated SMAD3 Peaks Restricted to Promoters") %>% 
-  kable(x = . , "latex", longtable = T) %>% 
-  kable_styling(latex_options = c("repeat_header"))
+  rename(Description = "Enriched GO Terms in Treated SMAD3 Peaks Restricted to Promoters")
 ```
 
 \clearpage{}
 
 ```{r}
-dotplot(prom_ego_SMAD3_LAP_treated_peaks) + ggtitle(label = "Enriched BP GO Term in Treated SMAD3 Promoter Peaks") + theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
+dotplot(prom_ego_SMAD3_LAP_treated_peaks) + 
+  ggtitle(label = "Enriched BP GO Term in Treated SMAD3 Promoter Peaks") + 
+  theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
 ```
 
 
