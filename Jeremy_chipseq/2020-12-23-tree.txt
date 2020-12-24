@@ -1,0 +1,856 @@
+.
+|-- 2020-12-23-tree.txt
+|-- Bioinfo_Analysis.Rproj
+|-- SMAD2_abInput_treated_peaks.narrowPeak
+|-- SMAD2_abInput_untreated_peaks.narrowPeak
+|-- SMAD3_LAP_treated_peaks.narrowPeak
+|-- SMAD3_LAP_untreated_peaks.narrowPeak
+|-- analysing_both.R
+|-- analysing_both.RData
+|-- annotation_go_results.RData
+|-- annotation_go_rough_code.R
+|-- differential_binding
+|   |-- treated
+|   |   |-- Gviz_motif.R
+|   |   |-- Gviz_motif.RData
+|   |   |-- Gviz_motif.Rmd
+|   |   |-- Gviz_motif.html
+|   |   |-- differential_binding.R
+|   |   |-- differential_binding.RData
+|   |   |-- differential_binding.Rmd
+|   |   |-- differential_binding.html
+|   |   |-- differential_binding_go_term.RData
+|   |   |-- differential_binding_old.Rmd
+|   |   |-- localtree.txt
+|   |   |-- treated-diffpeak_results
+|   |   |   |-- diff_lap-smad2_vs_lap-smad3_c3.0_common.bed
+|   |   |   |-- diff_lap-smad2_vs_lap-smad3_c3.0_cond1.bed
+|   |   |   |-- diff_lap-smad2_vs_lap-smad3_c3.0_cond2.bed
+|   |   |   |-- diff_lap-smad2_vs_native-smad3_c3.0_common.bed
+|   |   |   |-- diff_lap-smad2_vs_native-smad3_c3.0_cond1.bed
+|   |   |   `-- diff_lap-smad2_vs_native-smad3_c3.0_cond2.bed
+|   |   |-- treated-lap-smad2
+|   |   |   |-- lap-smad2_control_lambda.bdg
+|   |   |   |-- lap-smad2_peaks.narrowPeak
+|   |   |   |-- lap-smad2_peaks.xls
+|   |   |   |-- lap-smad2_summits.bed
+|   |   |   `-- lap-smad2_treat_pileup.bdg
+|   |   |-- treated-lap-smad3
+|   |   |   |-- lap-smad3_control_lambda.bdg
+|   |   |   |-- lap-smad3_peaks.narrowPeak
+|   |   |   |-- lap-smad3_peaks.xls
+|   |   |   |-- lap-smad3_summits.bed
+|   |   |   `-- lap-smad3_treat_pileup.bdg
+|   |   |-- treated-motif_enrichment
+|   |   |   |-- ambi_ranges_ls2_vs_ns3_Smad2.bed
+|   |   |   |-- ambi_ranges_ls2_vs_ns3_Smad3.bed
+|   |   |   |-- homer_messages.txt
+|   |   |   |-- homer_script.sh
+|   |   |   |-- homer_script.sh~
+|   |   |   |-- smad2_ranges_results
+|   |   |   |   |-- homerMotifs.all.motifs
+|   |   |   |   |-- homerMotifs.motifs10
+|   |   |   |   |-- homerMotifs.motifs12
+|   |   |   |   |-- homerMotifs.motifs8
+|   |   |   |   |-- homerResults
+|   |   |   |   |   |-- motif1.info.html
+|   |   |   |   |   |-- motif1.logo.svg
+|   |   |   |   |   |-- motif1.motif
+|   |   |   |   |   |-- motif1.similar.html
+|   |   |   |   |   |-- motif1.similar1.motif
+|   |   |   |   |   |-- motif1.similar2.motif
+|   |   |   |   |   |-- motif10.info.html
+|   |   |   |   |   |-- motif10.logo.svg
+|   |   |   |   |   |-- motif10.motif
+|   |   |   |   |   |-- motif10.similar.html
+|   |   |   |   |   |-- motif10.similar1.motif
+|   |   |   |   |   |-- motif10.similar2.motif
+|   |   |   |   |   |-- motif10.similar3.motif
+|   |   |   |   |   |-- motif10.similar4.motif
+|   |   |   |   |   |-- motif10RV.logo.svg
+|   |   |   |   |   |-- motif10RV.motif
+|   |   |   |   |   |-- motif11.info.html
+|   |   |   |   |   |-- motif11.logo.svg
+|   |   |   |   |   |-- motif11.motif
+|   |   |   |   |   |-- motif11.similar.html
+|   |   |   |   |   |-- motif11.similar1.motif
+|   |   |   |   |   |-- motif11.similar2.motif
+|   |   |   |   |   |-- motif11.similar3.motif
+|   |   |   |   |   |-- motif11RV.logo.svg
+|   |   |   |   |   |-- motif11RV.motif
+|   |   |   |   |   |-- motif12.info.html
+|   |   |   |   |   |-- motif12.logo.svg
+|   |   |   |   |   |-- motif12.motif
+|   |   |   |   |   |-- motif12.similar.html
+|   |   |   |   |   |-- motif12.similar1.motif
+|   |   |   |   |   |-- motif12.similar2.motif
+|   |   |   |   |   |-- motif12.similar3.motif
+|   |   |   |   |   |-- motif12RV.logo.svg
+|   |   |   |   |   |-- motif12RV.motif
+|   |   |   |   |   |-- motif13.info.html
+|   |   |   |   |   |-- motif13.logo.svg
+|   |   |   |   |   |-- motif13.motif
+|   |   |   |   |   |-- motif13.similar.html
+|   |   |   |   |   |-- motif13.similar1.motif
+|   |   |   |   |   |-- motif13RV.logo.svg
+|   |   |   |   |   |-- motif13RV.motif
+|   |   |   |   |   |-- motif14.info.html
+|   |   |   |   |   |-- motif14.logo.svg
+|   |   |   |   |   |-- motif14.motif
+|   |   |   |   |   |-- motif14.similar.html
+|   |   |   |   |   |-- motif14.similar1.motif
+|   |   |   |   |   |-- motif14.similar2.motif
+|   |   |   |   |   |-- motif14.similar3.motif
+|   |   |   |   |   |-- motif14RV.logo.svg
+|   |   |   |   |   |-- motif14RV.motif
+|   |   |   |   |   |-- motif15.info.html
+|   |   |   |   |   |-- motif15.logo.svg
+|   |   |   |   |   |-- motif15.motif
+|   |   |   |   |   |-- motif15.similar.html
+|   |   |   |   |   |-- motif15.similar1.motif
+|   |   |   |   |   |-- motif15RV.logo.svg
+|   |   |   |   |   |-- motif15RV.motif
+|   |   |   |   |   |-- motif16.info.html
+|   |   |   |   |   |-- motif16.logo.svg
+|   |   |   |   |   |-- motif16.motif
+|   |   |   |   |   |-- motif16.similar.html
+|   |   |   |   |   |-- motif16RV.logo.svg
+|   |   |   |   |   |-- motif16RV.motif
+|   |   |   |   |   |-- motif17.info.html
+|   |   |   |   |   |-- motif17.logo.svg
+|   |   |   |   |   |-- motif17.motif
+|   |   |   |   |   |-- motif17.similar.html
+|   |   |   |   |   |-- motif17.similar1.motif
+|   |   |   |   |   |-- motif17RV.logo.svg
+|   |   |   |   |   |-- motif17RV.motif
+|   |   |   |   |   |-- motif18.info.html
+|   |   |   |   |   |-- motif18.logo.svg
+|   |   |   |   |   |-- motif18.motif
+|   |   |   |   |   |-- motif18.similar.html
+|   |   |   |   |   |-- motif18RV.logo.svg
+|   |   |   |   |   |-- motif18RV.motif
+|   |   |   |   |   |-- motif19.info.html
+|   |   |   |   |   |-- motif19.logo.svg
+|   |   |   |   |   |-- motif19.motif
+|   |   |   |   |   |-- motif19.similar.html
+|   |   |   |   |   |-- motif19.similar1.motif
+|   |   |   |   |   |-- motif19.similar2.motif
+|   |   |   |   |   |-- motif19RV.logo.svg
+|   |   |   |   |   |-- motif19RV.motif
+|   |   |   |   |   |-- motif1RV.logo.svg
+|   |   |   |   |   |-- motif1RV.motif
+|   |   |   |   |   |-- motif2.info.html
+|   |   |   |   |   |-- motif2.logo.svg
+|   |   |   |   |   |-- motif2.motif
+|   |   |   |   |   |-- motif2.similar.html
+|   |   |   |   |   |-- motif2.similar1.motif
+|   |   |   |   |   |-- motif2.similar2.motif
+|   |   |   |   |   |-- motif2.similar3.motif
+|   |   |   |   |   |-- motif2.similar4.motif
+|   |   |   |   |   |-- motif2.similar5.motif
+|   |   |   |   |   |-- motif20.info.html
+|   |   |   |   |   |-- motif20.logo.svg
+|   |   |   |   |   |-- motif20.motif
+|   |   |   |   |   |-- motif20.similar.html
+|   |   |   |   |   |-- motif20RV.logo.svg
+|   |   |   |   |   |-- motif20RV.motif
+|   |   |   |   |   |-- motif21.info.html
+|   |   |   |   |   |-- motif21.logo.svg
+|   |   |   |   |   |-- motif21.motif
+|   |   |   |   |   |-- motif21.similar.html
+|   |   |   |   |   |-- motif21RV.logo.svg
+|   |   |   |   |   |-- motif21RV.motif
+|   |   |   |   |   |-- motif22.info.html
+|   |   |   |   |   |-- motif22.logo.svg
+|   |   |   |   |   |-- motif22.motif
+|   |   |   |   |   |-- motif22.similar.html
+|   |   |   |   |   |-- motif22RV.logo.svg
+|   |   |   |   |   |-- motif22RV.motif
+|   |   |   |   |   |-- motif23.info.html
+|   |   |   |   |   |-- motif23.logo.svg
+|   |   |   |   |   |-- motif23.motif
+|   |   |   |   |   |-- motif23.similar.html
+|   |   |   |   |   |-- motif23RV.logo.svg
+|   |   |   |   |   |-- motif23RV.motif
+|   |   |   |   |   |-- motif24.info.html
+|   |   |   |   |   |-- motif24.logo.svg
+|   |   |   |   |   |-- motif24.motif
+|   |   |   |   |   |-- motif24.similar.html
+|   |   |   |   |   |-- motif24RV.logo.svg
+|   |   |   |   |   |-- motif24RV.motif
+|   |   |   |   |   |-- motif25.info.html
+|   |   |   |   |   |-- motif25.logo.svg
+|   |   |   |   |   |-- motif25.motif
+|   |   |   |   |   |-- motif25.similar.html
+|   |   |   |   |   |-- motif25RV.logo.svg
+|   |   |   |   |   |-- motif25RV.motif
+|   |   |   |   |   |-- motif26.info.html
+|   |   |   |   |   |-- motif26.logo.svg
+|   |   |   |   |   |-- motif26.motif
+|   |   |   |   |   |-- motif26.similar.html
+|   |   |   |   |   |-- motif26RV.logo.svg
+|   |   |   |   |   |-- motif26RV.motif
+|   |   |   |   |   |-- motif27.info.html
+|   |   |   |   |   |-- motif27.logo.svg
+|   |   |   |   |   |-- motif27.motif
+|   |   |   |   |   |-- motif27.similar.html
+|   |   |   |   |   |-- motif27RV.logo.svg
+|   |   |   |   |   |-- motif27RV.motif
+|   |   |   |   |   |-- motif28.info.html
+|   |   |   |   |   |-- motif28.logo.svg
+|   |   |   |   |   |-- motif28.motif
+|   |   |   |   |   |-- motif28.similar.html
+|   |   |   |   |   |-- motif28RV.logo.svg
+|   |   |   |   |   |-- motif28RV.motif
+|   |   |   |   |   |-- motif29.info.html
+|   |   |   |   |   |-- motif29.logo.svg
+|   |   |   |   |   |-- motif29.motif
+|   |   |   |   |   |-- motif29.similar.html
+|   |   |   |   |   |-- motif29RV.logo.svg
+|   |   |   |   |   |-- motif29RV.motif
+|   |   |   |   |   |-- motif2RV.logo.svg
+|   |   |   |   |   |-- motif2RV.motif
+|   |   |   |   |   |-- motif3.info.html
+|   |   |   |   |   |-- motif3.logo.svg
+|   |   |   |   |   |-- motif3.motif
+|   |   |   |   |   |-- motif3.similar.html
+|   |   |   |   |   |-- motif3.similar1.motif
+|   |   |   |   |   |-- motif3RV.logo.svg
+|   |   |   |   |   |-- motif3RV.motif
+|   |   |   |   |   |-- motif4.info.html
+|   |   |   |   |   |-- motif4.logo.svg
+|   |   |   |   |   |-- motif4.motif
+|   |   |   |   |   |-- motif4.similar.html
+|   |   |   |   |   |-- motif4.similar1.motif
+|   |   |   |   |   |-- motif4RV.logo.svg
+|   |   |   |   |   |-- motif4RV.motif
+|   |   |   |   |   |-- motif5.info.html
+|   |   |   |   |   |-- motif5.logo.svg
+|   |   |   |   |   |-- motif5.motif
+|   |   |   |   |   |-- motif5.similar.html
+|   |   |   |   |   |-- motif5.similar1.motif
+|   |   |   |   |   |-- motif5RV.logo.svg
+|   |   |   |   |   |-- motif5RV.motif
+|   |   |   |   |   |-- motif6.info.html
+|   |   |   |   |   |-- motif6.logo.svg
+|   |   |   |   |   |-- motif6.motif
+|   |   |   |   |   |-- motif6.similar.html
+|   |   |   |   |   |-- motif6.similar1.motif
+|   |   |   |   |   |-- motif6RV.logo.svg
+|   |   |   |   |   |-- motif6RV.motif
+|   |   |   |   |   |-- motif7.info.html
+|   |   |   |   |   |-- motif7.logo.svg
+|   |   |   |   |   |-- motif7.motif
+|   |   |   |   |   |-- motif7.similar.html
+|   |   |   |   |   |-- motif7.similar1.motif
+|   |   |   |   |   |-- motif7.similar2.motif
+|   |   |   |   |   |-- motif7.similar3.motif
+|   |   |   |   |   |-- motif7.similar4.motif
+|   |   |   |   |   |-- motif7RV.logo.svg
+|   |   |   |   |   |-- motif7RV.motif
+|   |   |   |   |   |-- motif8.info.html
+|   |   |   |   |   |-- motif8.logo.svg
+|   |   |   |   |   |-- motif8.motif
+|   |   |   |   |   |-- motif8.similar.html
+|   |   |   |   |   |-- motif8.similar1.motif
+|   |   |   |   |   |-- motif8.similar2.motif
+|   |   |   |   |   |-- motif8.similar3.motif
+|   |   |   |   |   |-- motif8.similar4.motif
+|   |   |   |   |   |-- motif8RV.logo.svg
+|   |   |   |   |   |-- motif8RV.motif
+|   |   |   |   |   |-- motif9.info.html
+|   |   |   |   |   |-- motif9.logo.svg
+|   |   |   |   |   |-- motif9.motif
+|   |   |   |   |   |-- motif9.similar.html
+|   |   |   |   |   |-- motif9.similar1.motif
+|   |   |   |   |   |-- motif9.similar2.motif
+|   |   |   |   |   |-- motif9.similar3.motif
+|   |   |   |   |   |-- motif9.similar4.motif
+|   |   |   |   |   |-- motif9RV.logo.svg
+|   |   |   |   |   `-- motif9RV.motif
+|   |   |   |   |-- homerResults.html
+|   |   |   |   |-- knownResults
+|   |   |   |   |   |-- known1.logo.svg
+|   |   |   |   |   |-- known1.motif
+|   |   |   |   |   |-- known10.logo.svg
+|   |   |   |   |   |-- known10.motif
+|   |   |   |   |   |-- known11.logo.svg
+|   |   |   |   |   |-- known11.motif
+|   |   |   |   |   |-- known12.logo.svg
+|   |   |   |   |   |-- known12.motif
+|   |   |   |   |   |-- known13.logo.svg
+|   |   |   |   |   |-- known13.motif
+|   |   |   |   |   |-- known14.logo.svg
+|   |   |   |   |   |-- known14.motif
+|   |   |   |   |   |-- known15.logo.svg
+|   |   |   |   |   |-- known15.motif
+|   |   |   |   |   |-- known16.logo.svg
+|   |   |   |   |   |-- known16.motif
+|   |   |   |   |   |-- known17.logo.svg
+|   |   |   |   |   |-- known17.motif
+|   |   |   |   |   |-- known18.logo.svg
+|   |   |   |   |   |-- known18.motif
+|   |   |   |   |   |-- known19.logo.svg
+|   |   |   |   |   |-- known19.motif
+|   |   |   |   |   |-- known2.logo.svg
+|   |   |   |   |   |-- known2.motif
+|   |   |   |   |   |-- known20.logo.svg
+|   |   |   |   |   |-- known20.motif
+|   |   |   |   |   |-- known21.logo.svg
+|   |   |   |   |   |-- known21.motif
+|   |   |   |   |   |-- known22.logo.svg
+|   |   |   |   |   |-- known22.motif
+|   |   |   |   |   |-- known23.logo.svg
+|   |   |   |   |   |-- known23.motif
+|   |   |   |   |   |-- known24.logo.svg
+|   |   |   |   |   |-- known24.motif
+|   |   |   |   |   |-- known25.logo.svg
+|   |   |   |   |   |-- known25.motif
+|   |   |   |   |   |-- known26.logo.svg
+|   |   |   |   |   |-- known26.motif
+|   |   |   |   |   |-- known27.logo.svg
+|   |   |   |   |   |-- known27.motif
+|   |   |   |   |   |-- known28.logo.svg
+|   |   |   |   |   |-- known28.motif
+|   |   |   |   |   |-- known29.logo.svg
+|   |   |   |   |   |-- known29.motif
+|   |   |   |   |   |-- known3.logo.svg
+|   |   |   |   |   |-- known3.motif
+|   |   |   |   |   |-- known30.logo.svg
+|   |   |   |   |   |-- known30.motif
+|   |   |   |   |   |-- known31.logo.svg
+|   |   |   |   |   |-- known31.motif
+|   |   |   |   |   |-- known32.logo.svg
+|   |   |   |   |   |-- known32.motif
+|   |   |   |   |   |-- known33.logo.svg
+|   |   |   |   |   |-- known33.motif
+|   |   |   |   |   |-- known34.logo.svg
+|   |   |   |   |   |-- known34.motif
+|   |   |   |   |   |-- known35.logo.svg
+|   |   |   |   |   |-- known35.motif
+|   |   |   |   |   |-- known4.logo.svg
+|   |   |   |   |   |-- known4.motif
+|   |   |   |   |   |-- known5.logo.svg
+|   |   |   |   |   |-- known5.motif
+|   |   |   |   |   |-- known6.logo.svg
+|   |   |   |   |   |-- known6.motif
+|   |   |   |   |   |-- known7.logo.svg
+|   |   |   |   |   |-- known7.motif
+|   |   |   |   |   |-- known8.logo.svg
+|   |   |   |   |   |-- known8.motif
+|   |   |   |   |   |-- known9.logo.svg
+|   |   |   |   |   `-- known9.motif
+|   |   |   |   |-- knownResults.html
+|   |   |   |   |-- knownResults.txt
+|   |   |   |   |-- motifFindingParameters.txt
+|   |   |   |   `-- seq.autonorm.tsv
+|   |   |   `-- smad3_ranges_results
+|   |   |       |-- homerMotifs.all.motifs
+|   |   |       |-- homerMotifs.motifs10
+|   |   |       |-- homerMotifs.motifs12
+|   |   |       |-- homerMotifs.motifs8
+|   |   |       |-- homerResults
+|   |   |       |   |-- motif1.info.html
+|   |   |       |   |-- motif1.logo.svg
+|   |   |       |   |-- motif1.motif
+|   |   |       |   |-- motif1.similar.html
+|   |   |       |   |-- motif1.similar1.motif
+|   |   |       |   |-- motif10.info.html
+|   |   |       |   |-- motif10.logo.svg
+|   |   |       |   |-- motif10.motif
+|   |   |       |   |-- motif10.similar.html
+|   |   |       |   |-- motif10.similar1.motif
+|   |   |       |   |-- motif10.similar2.motif
+|   |   |       |   |-- motif10RV.logo.svg
+|   |   |       |   |-- motif10RV.motif
+|   |   |       |   |-- motif11.info.html
+|   |   |       |   |-- motif11.logo.svg
+|   |   |       |   |-- motif11.motif
+|   |   |       |   |-- motif11.similar.html
+|   |   |       |   |-- motif11.similar1.motif
+|   |   |       |   |-- motif11RV.logo.svg
+|   |   |       |   |-- motif11RV.motif
+|   |   |       |   |-- motif12.info.html
+|   |   |       |   |-- motif12.logo.svg
+|   |   |       |   |-- motif12.motif
+|   |   |       |   |-- motif12.similar.html
+|   |   |       |   |-- motif12.similar1.motif
+|   |   |       |   |-- motif12.similar2.motif
+|   |   |       |   |-- motif12.similar3.motif
+|   |   |       |   |-- motif12RV.logo.svg
+|   |   |       |   |-- motif12RV.motif
+|   |   |       |   |-- motif13.info.html
+|   |   |       |   |-- motif13.logo.svg
+|   |   |       |   |-- motif13.motif
+|   |   |       |   |-- motif13.similar.html
+|   |   |       |   |-- motif13.similar1.motif
+|   |   |       |   |-- motif13.similar2.motif
+|   |   |       |   |-- motif13RV.logo.svg
+|   |   |       |   |-- motif13RV.motif
+|   |   |       |   |-- motif14.info.html
+|   |   |       |   |-- motif14.logo.svg
+|   |   |       |   |-- motif14.motif
+|   |   |       |   |-- motif14.similar.html
+|   |   |       |   |-- motif14.similar1.motif
+|   |   |       |   |-- motif14RV.logo.svg
+|   |   |       |   |-- motif14RV.motif
+|   |   |       |   |-- motif15.info.html
+|   |   |       |   |-- motif15.logo.svg
+|   |   |       |   |-- motif15.motif
+|   |   |       |   |-- motif15.similar.html
+|   |   |       |   |-- motif15RV.logo.svg
+|   |   |       |   |-- motif15RV.motif
+|   |   |       |   |-- motif16.info.html
+|   |   |       |   |-- motif16.logo.svg
+|   |   |       |   |-- motif16.motif
+|   |   |       |   |-- motif16.similar.html
+|   |   |       |   |-- motif16.similar1.motif
+|   |   |       |   |-- motif16RV.logo.svg
+|   |   |       |   |-- motif16RV.motif
+|   |   |       |   |-- motif17.info.html
+|   |   |       |   |-- motif17.logo.svg
+|   |   |       |   |-- motif17.motif
+|   |   |       |   |-- motif17.similar.html
+|   |   |       |   |-- motif17RV.logo.svg
+|   |   |       |   |-- motif17RV.motif
+|   |   |       |   |-- motif18.info.html
+|   |   |       |   |-- motif18.logo.svg
+|   |   |       |   |-- motif18.motif
+|   |   |       |   |-- motif18.similar.html
+|   |   |       |   |-- motif18RV.logo.svg
+|   |   |       |   |-- motif18RV.motif
+|   |   |       |   |-- motif19.info.html
+|   |   |       |   |-- motif19.logo.svg
+|   |   |       |   |-- motif19.motif
+|   |   |       |   |-- motif19.similar.html
+|   |   |       |   |-- motif19RV.logo.svg
+|   |   |       |   |-- motif19RV.motif
+|   |   |       |   |-- motif1RV.logo.svg
+|   |   |       |   |-- motif1RV.motif
+|   |   |       |   |-- motif2.info.html
+|   |   |       |   |-- motif2.logo.svg
+|   |   |       |   |-- motif2.motif
+|   |   |       |   |-- motif2.similar.html
+|   |   |       |   |-- motif20.info.html
+|   |   |       |   |-- motif20.logo.svg
+|   |   |       |   |-- motif20.motif
+|   |   |       |   |-- motif20.similar.html
+|   |   |       |   |-- motif20.similar1.motif
+|   |   |       |   |-- motif20.similar2.motif
+|   |   |       |   |-- motif20.similar3.motif
+|   |   |       |   |-- motif20RV.logo.svg
+|   |   |       |   |-- motif20RV.motif
+|   |   |       |   |-- motif21.info.html
+|   |   |       |   |-- motif21.logo.svg
+|   |   |       |   |-- motif21.motif
+|   |   |       |   |-- motif21.similar.html
+|   |   |       |   |-- motif21RV.logo.svg
+|   |   |       |   |-- motif21RV.motif
+|   |   |       |   |-- motif22.info.html
+|   |   |       |   |-- motif22.logo.svg
+|   |   |       |   |-- motif22.motif
+|   |   |       |   |-- motif22.similar.html
+|   |   |       |   |-- motif22RV.logo.svg
+|   |   |       |   |-- motif22RV.motif
+|   |   |       |   |-- motif23.info.html
+|   |   |       |   |-- motif23.logo.svg
+|   |   |       |   |-- motif23.motif
+|   |   |       |   |-- motif23.similar.html
+|   |   |       |   |-- motif23.similar1.motif
+|   |   |       |   |-- motif23RV.logo.svg
+|   |   |       |   |-- motif23RV.motif
+|   |   |       |   |-- motif24.info.html
+|   |   |       |   |-- motif24.logo.svg
+|   |   |       |   |-- motif24.motif
+|   |   |       |   |-- motif24.similar.html
+|   |   |       |   |-- motif24RV.logo.svg
+|   |   |       |   |-- motif24RV.motif
+|   |   |       |   |-- motif25.info.html
+|   |   |       |   |-- motif25.logo.svg
+|   |   |       |   |-- motif25.motif
+|   |   |       |   |-- motif25.similar.html
+|   |   |       |   |-- motif25RV.logo.svg
+|   |   |       |   |-- motif25RV.motif
+|   |   |       |   |-- motif26.info.html
+|   |   |       |   |-- motif26.logo.svg
+|   |   |       |   |-- motif26.motif
+|   |   |       |   |-- motif26.similar.html
+|   |   |       |   |-- motif26RV.logo.svg
+|   |   |       |   |-- motif26RV.motif
+|   |   |       |   |-- motif27.info.html
+|   |   |       |   |-- motif27.logo.svg
+|   |   |       |   |-- motif27.motif
+|   |   |       |   |-- motif27.similar.html
+|   |   |       |   |-- motif27RV.logo.svg
+|   |   |       |   |-- motif27RV.motif
+|   |   |       |   |-- motif28.info.html
+|   |   |       |   |-- motif28.logo.svg
+|   |   |       |   |-- motif28.motif
+|   |   |       |   |-- motif28.similar.html
+|   |   |       |   |-- motif28RV.logo.svg
+|   |   |       |   |-- motif28RV.motif
+|   |   |       |   |-- motif29.info.html
+|   |   |       |   |-- motif29.logo.svg
+|   |   |       |   |-- motif29.motif
+|   |   |       |   |-- motif29.similar.html
+|   |   |       |   |-- motif29RV.logo.svg
+|   |   |       |   |-- motif29RV.motif
+|   |   |       |   |-- motif2RV.logo.svg
+|   |   |       |   |-- motif2RV.motif
+|   |   |       |   |-- motif3.info.html
+|   |   |       |   |-- motif3.logo.svg
+|   |   |       |   |-- motif3.motif
+|   |   |       |   |-- motif3.similar.html
+|   |   |       |   |-- motif3.similar1.motif
+|   |   |       |   |-- motif3.similar2.motif
+|   |   |       |   |-- motif30.info.html
+|   |   |       |   |-- motif30.logo.svg
+|   |   |       |   |-- motif30.motif
+|   |   |       |   |-- motif30.similar.html
+|   |   |       |   |-- motif30RV.logo.svg
+|   |   |       |   |-- motif30RV.motif
+|   |   |       |   |-- motif31.info.html
+|   |   |       |   |-- motif31.logo.svg
+|   |   |       |   |-- motif31.motif
+|   |   |       |   |-- motif31.similar.html
+|   |   |       |   |-- motif31.similar1.motif
+|   |   |       |   |-- motif31.similar2.motif
+|   |   |       |   |-- motif31RV.logo.svg
+|   |   |       |   |-- motif31RV.motif
+|   |   |       |   |-- motif32.info.html
+|   |   |       |   |-- motif32.logo.svg
+|   |   |       |   |-- motif32.motif
+|   |   |       |   |-- motif32.similar.html
+|   |   |       |   |-- motif32.similar1.motif
+|   |   |       |   |-- motif32RV.logo.svg
+|   |   |       |   |-- motif32RV.motif
+|   |   |       |   |-- motif33.info.html
+|   |   |       |   |-- motif33.logo.svg
+|   |   |       |   |-- motif33.motif
+|   |   |       |   |-- motif33.similar.html
+|   |   |       |   |-- motif33.similar1.motif
+|   |   |       |   |-- motif33RV.logo.svg
+|   |   |       |   |-- motif33RV.motif
+|   |   |       |   |-- motif34.info.html
+|   |   |       |   |-- motif34.logo.svg
+|   |   |       |   |-- motif34.motif
+|   |   |       |   |-- motif34.similar.html
+|   |   |       |   |-- motif34RV.logo.svg
+|   |   |       |   |-- motif34RV.motif
+|   |   |       |   |-- motif35.info.html
+|   |   |       |   |-- motif35.logo.svg
+|   |   |       |   |-- motif35.motif
+|   |   |       |   |-- motif35.similar.html
+|   |   |       |   |-- motif35RV.logo.svg
+|   |   |       |   |-- motif35RV.motif
+|   |   |       |   |-- motif36.info.html
+|   |   |       |   |-- motif36.logo.svg
+|   |   |       |   |-- motif36.motif
+|   |   |       |   |-- motif36.similar.html
+|   |   |       |   |-- motif36RV.logo.svg
+|   |   |       |   |-- motif36RV.motif
+|   |   |       |   |-- motif37.info.html
+|   |   |       |   |-- motif37.logo.svg
+|   |   |       |   |-- motif37.motif
+|   |   |       |   |-- motif37.similar.html
+|   |   |       |   |-- motif37RV.logo.svg
+|   |   |       |   |-- motif37RV.motif
+|   |   |       |   |-- motif38.info.html
+|   |   |       |   |-- motif38.logo.svg
+|   |   |       |   |-- motif38.motif
+|   |   |       |   |-- motif38.similar.html
+|   |   |       |   |-- motif38.similar1.motif
+|   |   |       |   |-- motif38RV.logo.svg
+|   |   |       |   |-- motif38RV.motif
+|   |   |       |   |-- motif39.info.html
+|   |   |       |   |-- motif39.logo.svg
+|   |   |       |   |-- motif39.motif
+|   |   |       |   |-- motif39.similar.html
+|   |   |       |   |-- motif39RV.logo.svg
+|   |   |       |   |-- motif39RV.motif
+|   |   |       |   |-- motif3RV.logo.svg
+|   |   |       |   |-- motif3RV.motif
+|   |   |       |   |-- motif4.info.html
+|   |   |       |   |-- motif4.logo.svg
+|   |   |       |   |-- motif4.motif
+|   |   |       |   |-- motif4.similar.html
+|   |   |       |   |-- motif4.similar1.motif
+|   |   |       |   |-- motif40.info.html
+|   |   |       |   |-- motif40.logo.svg
+|   |   |       |   |-- motif40.motif
+|   |   |       |   |-- motif40.similar.html
+|   |   |       |   |-- motif40.similar1.motif
+|   |   |       |   |-- motif40.similar2.motif
+|   |   |       |   |-- motif40RV.logo.svg
+|   |   |       |   |-- motif40RV.motif
+|   |   |       |   |-- motif41.info.html
+|   |   |       |   |-- motif41.logo.svg
+|   |   |       |   |-- motif41.motif
+|   |   |       |   |-- motif41.similar.html
+|   |   |       |   |-- motif41RV.logo.svg
+|   |   |       |   |-- motif41RV.motif
+|   |   |       |   |-- motif42.info.html
+|   |   |       |   |-- motif42.logo.svg
+|   |   |       |   |-- motif42.motif
+|   |   |       |   |-- motif42.similar.html
+|   |   |       |   |-- motif42.similar1.motif
+|   |   |       |   |-- motif42RV.logo.svg
+|   |   |       |   |-- motif42RV.motif
+|   |   |       |   |-- motif4RV.logo.svg
+|   |   |       |   |-- motif4RV.motif
+|   |   |       |   |-- motif5.info.html
+|   |   |       |   |-- motif5.logo.svg
+|   |   |       |   |-- motif5.motif
+|   |   |       |   |-- motif5.similar.html
+|   |   |       |   |-- motif5.similar1.motif
+|   |   |       |   |-- motif5.similar2.motif
+|   |   |       |   |-- motif5RV.logo.svg
+|   |   |       |   |-- motif5RV.motif
+|   |   |       |   |-- motif6.info.html
+|   |   |       |   |-- motif6.logo.svg
+|   |   |       |   |-- motif6.motif
+|   |   |       |   |-- motif6.similar.html
+|   |   |       |   |-- motif6RV.logo.svg
+|   |   |       |   |-- motif6RV.motif
+|   |   |       |   |-- motif7.info.html
+|   |   |       |   |-- motif7.logo.svg
+|   |   |       |   |-- motif7.motif
+|   |   |       |   |-- motif7.similar.html
+|   |   |       |   |-- motif7.similar1.motif
+|   |   |       |   |-- motif7.similar2.motif
+|   |   |       |   |-- motif7RV.logo.svg
+|   |   |       |   |-- motif7RV.motif
+|   |   |       |   |-- motif8.info.html
+|   |   |       |   |-- motif8.logo.svg
+|   |   |       |   |-- motif8.motif
+|   |   |       |   |-- motif8.similar.html
+|   |   |       |   |-- motif8.similar1.motif
+|   |   |       |   |-- motif8RV.logo.svg
+|   |   |       |   |-- motif8RV.motif
+|   |   |       |   |-- motif9.info.html
+|   |   |       |   |-- motif9.logo.svg
+|   |   |       |   |-- motif9.motif
+|   |   |       |   |-- motif9.similar.html
+|   |   |       |   |-- motif9.similar1.motif
+|   |   |       |   |-- motif9.similar2.motif
+|   |   |       |   |-- motif9RV.logo.svg
+|   |   |       |   `-- motif9RV.motif
+|   |   |       |-- homerResults.html
+|   |   |       |-- knownResults
+|   |   |       |   |-- known1.logo.svg
+|   |   |       |   |-- known1.motif
+|   |   |       |   |-- known10.logo.svg
+|   |   |       |   |-- known10.motif
+|   |   |       |   |-- known11.logo.svg
+|   |   |       |   |-- known11.motif
+|   |   |       |   |-- known12.logo.svg
+|   |   |       |   |-- known12.motif
+|   |   |       |   |-- known13.logo.svg
+|   |   |       |   |-- known13.motif
+|   |   |       |   |-- known14.logo.svg
+|   |   |       |   |-- known14.motif
+|   |   |       |   |-- known15.logo.svg
+|   |   |       |   |-- known15.motif
+|   |   |       |   |-- known16.logo.svg
+|   |   |       |   |-- known16.motif
+|   |   |       |   |-- known17.logo.svg
+|   |   |       |   |-- known17.motif
+|   |   |       |   |-- known18.logo.svg
+|   |   |       |   |-- known18.motif
+|   |   |       |   |-- known19.logo.svg
+|   |   |       |   |-- known19.motif
+|   |   |       |   |-- known2.logo.svg
+|   |   |       |   |-- known2.motif
+|   |   |       |   |-- known20.logo.svg
+|   |   |       |   |-- known20.motif
+|   |   |       |   |-- known21.logo.svg
+|   |   |       |   |-- known21.motif
+|   |   |       |   |-- known22.logo.svg
+|   |   |       |   |-- known22.motif
+|   |   |       |   |-- known23.logo.svg
+|   |   |       |   |-- known23.motif
+|   |   |       |   |-- known24.logo.svg
+|   |   |       |   |-- known24.motif
+|   |   |       |   |-- known25.logo.svg
+|   |   |       |   |-- known25.motif
+|   |   |       |   |-- known26.logo.svg
+|   |   |       |   |-- known26.motif
+|   |   |       |   |-- known27.logo.svg
+|   |   |       |   |-- known27.motif
+|   |   |       |   |-- known28.logo.svg
+|   |   |       |   |-- known28.motif
+|   |   |       |   |-- known29.logo.svg
+|   |   |       |   |-- known29.motif
+|   |   |       |   |-- known3.logo.svg
+|   |   |       |   |-- known3.motif
+|   |   |       |   |-- known30.logo.svg
+|   |   |       |   |-- known30.motif
+|   |   |       |   |-- known31.logo.svg
+|   |   |       |   |-- known31.motif
+|   |   |       |   |-- known32.logo.svg
+|   |   |       |   |-- known32.motif
+|   |   |       |   |-- known33.logo.svg
+|   |   |       |   |-- known33.motif
+|   |   |       |   |-- known34.logo.svg
+|   |   |       |   |-- known34.motif
+|   |   |       |   |-- known35.logo.svg
+|   |   |       |   |-- known35.motif
+|   |   |       |   |-- known36.logo.svg
+|   |   |       |   |-- known36.motif
+|   |   |       |   |-- known37.logo.svg
+|   |   |       |   |-- known37.motif
+|   |   |       |   |-- known38.logo.svg
+|   |   |       |   |-- known38.motif
+|   |   |       |   |-- known39.logo.svg
+|   |   |       |   |-- known39.motif
+|   |   |       |   |-- known4.logo.svg
+|   |   |       |   |-- known4.motif
+|   |   |       |   |-- known40.logo.svg
+|   |   |       |   |-- known40.motif
+|   |   |       |   |-- known41.logo.svg
+|   |   |       |   |-- known41.motif
+|   |   |       |   |-- known42.logo.svg
+|   |   |       |   |-- known42.motif
+|   |   |       |   |-- known43.logo.svg
+|   |   |       |   |-- known43.motif
+|   |   |       |   |-- known44.logo.svg
+|   |   |       |   |-- known44.motif
+|   |   |       |   |-- known45.logo.svg
+|   |   |       |   |-- known45.motif
+|   |   |       |   |-- known46.logo.svg
+|   |   |       |   |-- known46.motif
+|   |   |       |   |-- known47.logo.svg
+|   |   |       |   |-- known47.motif
+|   |   |       |   |-- known48.logo.svg
+|   |   |       |   |-- known48.motif
+|   |   |       |   |-- known49.logo.svg
+|   |   |       |   |-- known49.motif
+|   |   |       |   |-- known5.logo.svg
+|   |   |       |   |-- known5.motif
+|   |   |       |   |-- known50.logo.svg
+|   |   |       |   |-- known50.motif
+|   |   |       |   |-- known51.logo.svg
+|   |   |       |   |-- known51.motif
+|   |   |       |   |-- known52.logo.svg
+|   |   |       |   |-- known52.motif
+|   |   |       |   |-- known53.logo.svg
+|   |   |       |   |-- known53.motif
+|   |   |       |   |-- known54.logo.svg
+|   |   |       |   |-- known54.motif
+|   |   |       |   |-- known55.logo.svg
+|   |   |       |   |-- known55.motif
+|   |   |       |   |-- known56.logo.svg
+|   |   |       |   |-- known56.motif
+|   |   |       |   |-- known57.logo.svg
+|   |   |       |   |-- known57.motif
+|   |   |       |   |-- known58.logo.svg
+|   |   |       |   |-- known58.motif
+|   |   |       |   |-- known59.logo.svg
+|   |   |       |   |-- known59.motif
+|   |   |       |   |-- known6.logo.svg
+|   |   |       |   |-- known6.motif
+|   |   |       |   |-- known7.logo.svg
+|   |   |       |   |-- known7.motif
+|   |   |       |   |-- known8.logo.svg
+|   |   |       |   |-- known8.motif
+|   |   |       |   |-- known9.logo.svg
+|   |   |       |   `-- known9.motif
+|   |   |       |-- knownResults.html
+|   |   |       |-- knownResults.txt
+|   |   |       |-- motifFindingParameters.txt
+|   |   |       `-- seq.autonorm.tsv
+|   |   `-- treated-native-smad3
+|   |       |-- native-smad3_control_lambda.bdg
+|   |       |-- native-smad3_peaks.narrowPeak
+|   |       |-- native-smad3_peaks.xls
+|   |       |-- native-smad3_summits.bed
+|   |       `-- native-smad3_treat_pileup.bdg
+|   `-- untreated
+|       |-- untreated-differential_binding.R
+|       |-- untreated-differential_binding.RData
+|       |-- untreated-differential_binding.Rmd
+|       |-- untreated-differential_binding.html
+|       |-- untreated-differential_binding_go_term.RData
+|       |-- untreated-diffpeak_results
+|       |   |-- untreated-diff_lap-smad2_vs_lap-smad3_c3.0_common.bed
+|       |   |-- untreated-diff_lap-smad2_vs_lap-smad3_c3.0_cond1.bed
+|       |   |-- untreated-diff_lap-smad2_vs_lap-smad3_c3.0_cond2.bed
+|       |   |-- untreated-diff_lap-smad2_vs_native-smad3_c3.0_common.bed
+|       |   |-- untreated-diff_lap-smad2_vs_native-smad3_c3.0_cond1.bed
+|       |   `-- untreated-diff_lap-smad2_vs_native-smad3_c3.0_cond2.bed
+|       |-- untreated-lap-smad2
+|       |   |-- untreated-lap-smad2_control_lambda.bdg
+|       |   |-- untreated-lap-smad2_peaks.narrowPeak
+|       |   |-- untreated-lap-smad2_peaks.xls
+|       |   |-- untreated-lap-smad2_summits.bed
+|       |   `-- untreated-lap-smad2_treat_pileup.bdg
+|       |-- untreated-lap-smad3
+|       |   |-- untreated-lap-smad3_control_lambda.bdg
+|       |   |-- untreated-lap-smad3_peaks.narrowPeak
+|       |   |-- untreated-lap-smad3_peaks.xls
+|       |   |-- untreated-lap-smad3_summits.bed
+|       |   `-- untreated-lap-smad3_treat_pileup.bdg
+|       `-- untreated-native-smad3
+|           |-- untreated-native-smad3_control_lambda.bdg
+|           |-- untreated-native-smad3_peaks.narrowPeak
+|           |-- untreated-native-smad3_peaks.xls
+|           |-- untreated-native-smad3_summits.bed
+|           `-- untreated-native-smad3_treat_pileup.bdg
+|-- differential_binding_pipeline.md
+|-- files.txt
+|-- localtree.txt
+|-- peak_annotation_go_term_analysis.Rmd
+|-- peak_annotation_go_term_analysis.pdf
+|-- peak_annotation_go_term_analysis.tex
+|-- peak_annotation_go_term_analysis_files
+|   `-- figure-latex
+|       |-- unnamed-chunk-10-1.pdf
+|       |-- unnamed-chunk-11-1.pdf
+|       |-- unnamed-chunk-12-1.pdf
+|       |-- unnamed-chunk-13-1.pdf
+|       |-- unnamed-chunk-15-1.pdf
+|       |-- unnamed-chunk-17-1.pdf
+|       |-- unnamed-chunk-19-1.pdf
+|       |-- unnamed-chunk-21-1.pdf
+|       |-- unnamed-chunk-23-1.pdf
+|       |-- unnamed-chunk-25-1.pdf
+|       |-- unnamed-chunk-27-1.pdf
+|       |-- unnamed-chunk-29-1.pdf
+|       `-- unnamed-chunk-31-1.pdf
+|-- plot-ranges.R
+|-- predictd.txt
+|-- script.sh
+|-- script2.sh
+`-- untreated
+    |-- untreated-differential_binding.R
+    |-- untreated-differential_binding.RData
+    |-- untreated-differential_binding.Rmd
+    |-- untreated-differential_binding.html
+    |-- untreated-differential_binding_go_term.RData
+    |-- untreated-diffpeak_results
+    |   |-- untreated-diff_lap-smad2_vs_lap-smad3_c3.0_common.bed
+    |   |-- untreated-diff_lap-smad2_vs_lap-smad3_c3.0_cond1.bed
+    |   |-- untreated-diff_lap-smad2_vs_lap-smad3_c3.0_cond2.bed
+    |   |-- untreated-diff_lap-smad2_vs_native-smad3_c3.0_common.bed
+    |   |-- untreated-diff_lap-smad2_vs_native-smad3_c3.0_cond1.bed
+    |   `-- untreated-diff_lap-smad2_vs_native-smad3_c3.0_cond2.bed
+    |-- untreated-lap-smad2
+    |   |-- untreated-lap-smad2_control_lambda.bdg
+    |   |-- untreated-lap-smad2_peaks.narrowPeak
+    |   |-- untreated-lap-smad2_peaks.xls
+    |   |-- untreated-lap-smad2_summits.bed
+    |   `-- untreated-lap-smad2_treat_pileup.bdg
+    |-- untreated-lap-smad3
+    |   |-- untreated-lap-smad3_control_lambda.bdg
+    |   |-- untreated-lap-smad3_peaks.narrowPeak
+    |   |-- untreated-lap-smad3_peaks.xls
+    |   |-- untreated-lap-smad3_summits.bed
+    |   `-- untreated-lap-smad3_treat_pileup.bdg
+    `-- untreated-native-smad3
+        |-- untreated-native-smad3_control_lambda.bdg
+        |-- untreated-native-smad3_peaks.narrowPeak
+        |-- untreated-native-smad3_peaks.xls
+        |-- untreated-native-smad3_summits.bed
+        `-- untreated-native-smad3_treat_pileup.bdg
+
+25 directories, 828 files
