@@ -108,9 +108,6 @@ Here are the contents of the files vector.
 files
 ```
 
-
-
-
 The following code was then used to assign the Granges in the list to separate variables. The name of the variable to hold each GRange object was derived from the respective file name from which its data was obtained. The names of the variables were stored as a character vector "v".To names in v, the respective GRange was assigned.  
 
 

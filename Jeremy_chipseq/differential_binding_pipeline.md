@@ -6,16 +6,25 @@
 
 # Metadata
 
-FCC6CLFACXX-wHAPSI016408-113: LAP Smad2 untreated
-FCC6CLFACXX-wHAPSI016409-133: LAP Smad2 treated
-S3o_GFP: LAP Smad3 treated
-S3xT_GFP: LAP Smad3 untreated
-MDAo_Smad3: Native Smad3 treated
-MDAxT_Smad3: Native Smad3 untreated
+| Sample ID                    |  Antibody Type          | TGF-beta Treatment |
+|------------------------------|-------------------------|--------------------|
+| FCC6CLFACXX-wHAPSI016408-113 | LAP Smad2 untreated     | Untreated          |
+| FCC6CLFACXX-wHAPSI016409-133 | LAP Smad2 treated       | Treated            |
+| S3o_GFP                      | LAP Smad3 treated       | Treated            |
+| S3xT_GFP                     | LAP Smad3 untreated     | Untreated          |
+| MDAo_Smad3                   | Native Smad3 treated    | Treated            |
+| MDAxT_Smad3                  |  Native Smad3 untreated | Untreated          |
+
+
+# Creating a directory for storing files for differential binding
+
+```bash
+ mkdir differential_binding
+```
 
 # Treated sample differential peak-calling
 
-## Getting uniform extension size for running callpeak
+## Getting uniform extension size for running callpeak using `predictd`
 
 `macs2 predictd -i ./bamfiles/MDA-treated_Smad3.bam`
 
@@ -87,14 +96,23 @@ Based on the predictd output, the uniform extension size to be used for peak cal
 (195 + 150 + 311) / 3 = 218
 
 
+## Calling peaks to generate BedGraph files
 
-## Calling peaks
+`macs2 callpeak -B -t bamfiles/MDA-treated_Smad3.bam -c bamfiles/input.bam -n treated-native-smad3 --nomodel --extsize 218`
 
-`macs2 callpeak -B -t bamfiles/MDA-treated_Smad3.bam -c bamfiles/input.bam -n native-smad3 --nomodel --extsize 218`
+`macs2 callpeak -B -t bamfiles/LAP-treated_Smad3.bam -c bamfiles/input.bam -n treated-lap-smad3 --nomodel --extsize 218`
 
-`macs2 callpeak -B -t bamfiles/LAP-treated_Smad3.bam -c bamfiles/input.bam -n lap-smad3 --nomodel --extsize 218`
+`macs2 callpeak -B -t bamfiles/FCC6CLFACXX-wHAPSI016409-133_L5_1.bam -c bamfiles/input.bam -n treated-lap-smad2 --nomodel --extsize 218`
 
-`macs2 callpeak -B -t bamfiles/FCC6CLFACXX-wHAPSI016409-133_L5_1.bam -c bamfiles/input.bam -n lap-smad2 --nomodel --extsize 218`
+## Moving peak-calling results to another directory
+
+```bash
+mkdir differential_binding/treated
+mv treated-lap-smad2/ differential_binding/treated/
+mv treated-lap-smad3/ differential_binding/treated/
+mv treated-native-smad3 differential_binding/treated/
+```
+
 
 ## Tags after filtering
 
@@ -121,7 +139,7 @@ tags after filtering in control: 31588061
 
 
 ```bash
-macs2 bdgdiff --t1 ./treated/treated-lap-smad2/lap-smad2_treat_pileup.bdg --c1 ./treated/treated-lap-smad2/lap-smad2_control_lambda.bdg --t2 ./treated/treated-lap-smad3/lap-smad3_treat_pileup.bdg --c2 ./treated/treated-lap-smad2/lap-smad3_control_lambda.bdg --d1 31588061 --d2 10967473 --o-prefix diffpeak_results/diff_lap-smad2_vs_lap-smad3
+macs2 bdgdiff --t1 differential_binding/treated/treated-lap-smad2/lap-smad2_treat_pileup.bdg --c1 differential_binding/treated/treated-lap-smad2/lap-smad2_control_lambda.bdg --t2 differential_binding/treated/treated-lap-smad3/lap-smad3_treat_pileup.bdg --c2 differential_binding/treated/treated-lap-smad2/lap-smad3_control_lambda.bdg --d1 31588061 --d2 10967473 --o-prefix differential_binding/treated/diffpeak_results/diff_lap-smad2_vs_lap-smad3
 ```
 
 
@@ -130,22 +148,20 @@ macs2 bdgdiff --t1 ./treated/treated-lap-smad2/lap-smad2_treat_pileup.bdg --c1 .
 
 
 ```bash
-macs2 bdgdiff --t1 ./treated/treated-lap-smad2/lap-smad2_treat_pileup.bdg --c1 ./treated/treated-lap-smad2/lap-smad2_control_lambda.bdg --t2 ./treated/treated-native-smad3/native-smad3_treat_pileup.bdg --c2 ./treated/treated-native-smad3/native-smad3_control_lambda.bdg --d1 31588061 --d2 19110302 --o-prefix diffpeak_results/diff_lap-smad2_vs_native-smad3
+macs2 bdgdiff --t1 differential_binding/treated/treated-lap-smad2/lap-smad2_treat_pileup.bdg --c1 differential_binding/treated/treated-lap-smad2/lap-smad2_control_lambda.bdg --t2 differential_binding/treated/treated-native-smad3/native-smad3_treat_pileup.bdg --c2 differential_binding/treated/treated-native-smad3/native-smad3_control_lambda.bdg --d1 31588061 --d2 19110302 --o-prefix differential_binding/treated/diffpeak_results/diff_lap-smad2_vs_native-smad3
 ```
-
-
 
 ---
 
 
 
 # Untreated sample differential peak-calling
+	
+## Getting uniform extension size for running callpeak using `predictd`
 
-
-
-## Getting uniform extension size for running callpeak
-
-
+macs2 predictd -i ./bamfiles/LAP-untreated_Smad3.bam |tee -a predictd.txt
+macs2 predictd -i ./bamfiles/MDA-untreated_Smad3.bam |tee -a predictd.txt
+macs2 predictd -i ./bamfiles/FCC6CLFACXX-wHAPSI016408-113_L5_1.bam |tee -a predictd.txt
 
 ### Output for predictd
 
@@ -212,24 +228,33 @@ Based on the predictd output, the uniform extension size to be used for peak cal
 
 
 
-## Calling peaks
+## Calling peaks to generate BedGraph files
 
-`macs2 callpeak -B -t bamfiles/MDA-untreated_Smad3.bam -c bamfiles/input.bam -n untreated/untreated-native-smad3 --nomodel --extsize 217`
+`macs2 callpeak -B -t bamfiles/MDA-untreated_Smad3.bam -c bamfiles/input.bam -n untreated-native-smad3 --nomodel --extsize 217`
 
-`macs2 callpeak -B -t bamfiles/LAP-untreated_Smad3.bam -c bamfiles/input.bam -n untreated/untreated-lap-smad3 --nomodel --extsize 217`
+`macs2 callpeak -B -t bamfiles/LAP-untreated_Smad3.bam -c bamfiles/input.bam -n untreated-lap-smad3 --nomodel --extsize 217`
 
-`macs2 callpeak -B -t bamfiles/FCC6CLFACXX-wHAPSI016408-113_L5_1.bam -c bamfiles/input.bam -n untreated/untreated-lap-smad2 --nomodel --extsize 217`
+`macs2 callpeak -B -t bamfiles/FCC6CLFACXX-wHAPSI016408-113_L5_1.bam -c bamfiles/input.bam -n untreated-lap-smad2 --nomodel --extsize 217`
+
+## Moving peak-calling results to another directory
+
+```bash
+mkdir differential_binding/treated
+mv untreated-lap-smad2/ differential_binding/untreated/
+mv untreated-lap-smad3/ differential_binding/untreated/
+mv untreated-native-smad3 differential_binding/untreated/
+```
 
 ## Tags after filtering
 
 ### lap-smad2 tags after filtering
 
-\tags after filtering in treatment: 46760825
+tags after filtering in treatment: 46760825
 tags after filtering in control: 31588061
 
 ### native-smad3 tags after filtering
 
-\tags after filtering in treatment: 13426831
+tags after filtering in treatment: 13426831
 tags after filtering in control: 31588061
 
 ### lap-smad3 tags after filtering
@@ -245,7 +270,7 @@ tags after filtering in control: 31588061
 
 
 ```bash
-macs2 bdgdiff --t1 ./untreated/untreated-lap-smad2/untreated-lap-smad2_treat_pileup.bdg --c1 ./untreated/untreated-lap-smad2/untreated-lap-smad2_control_lambda.bdg --t2 ./untreated/untreated-lap-smad3/untreated-lap-smad3_treat_pileup.bdg --c2 ./untreated/untreated-lap-smad3/untreated-lap-smad3_control_lambda.bdg --d1 31588061 --d2 31588061 --o-prefix ./untreated/untreated-diffpeak_results/untreated-diff_lap-smad2_vs_lap-smad3
+macs2 bdgdiff --t1 differential_binding/untreated/untreated-lap-smad2/untreated-lap-smad2_treat_pileup.bdg --c1 differential_binding/untreated/untreated-lap-smad2/untreated-lap-smad2_control_lambda.bdg --t2 differential_binding/untreated/untreated-lap-smad3/untreated-lap-smad3_treat_pileup.bdg --c2 differential_binding/untreated/untreated-lap-smad3/untreated-lap-smad3_control_lambda.bdg --d1 31588061 --d2 31588061 --o-prefix differential_binding/untreated/untreated-diffpeak_results/untreated-diff_lap-smad2_vs_lap-smad3
 ```
 
 ### lap-smad2 vs native-smad3 differential peaks
@@ -253,5 +278,5 @@ macs2 bdgdiff --t1 ./untreated/untreated-lap-smad2/untreated-lap-smad2_treat_pil
 
 
 ```bash
-macs2 bdgdiff --t1 ./untreated/untreated-lap-smad2/untreated-lap-smad2_treat_pileup.bdg --c1 ./untreated/untreated-lap-smad2/untreated-lap-smad2_control_lambda.bdg --t2 ./untreated/untreated-native-smad3/untreated-native-smad3_treat_pileup.bdg --c2 ./untreated/untreated-native-smad3/untreated-native-smad3_control_lambda.bdg --d1 31588061 --d2 13426831 --o-prefix ./untreated/untreated-diffpeak_results/untreated-diff_lap-smad2_vs_native-smad3
+macs2 bdgdiff --t1 differential_binding/untreated/untreated-lap-smad2/untreated-lap-smad2_treat_pileup.bdg --c1 differential_binding/untreated/untreated-lap-smad2/untreated-lap-smad2_control_lambda.bdg --t2 differential_binding/untreated/untreated-native-smad3/untreated-native-smad3_treat_pileup.bdg --c2 differential_binding/untreated/untreated-native-smad3/untreated-native-smad3_control_lambda.bdg --d1 31588061 --d2 13426831 --o-prefix differential_binding/untreated/untreated-diffpeak_results/untreated-diff_lap-smad2_vs_native-smad3
 ```
