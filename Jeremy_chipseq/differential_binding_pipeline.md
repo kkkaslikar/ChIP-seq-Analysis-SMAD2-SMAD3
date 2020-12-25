@@ -139,7 +139,7 @@ tags after filtering in control: 31588061
 
 
 ```bash
-macs2 bdgdiff --t1 differential_binding/treated/treated-lap-smad2/lap-smad2_treat_pileup.bdg --c1 differential_binding/treated/treated-lap-smad2/lap-smad2_control_lambda.bdg --t2 differential_binding/treated/treated-lap-smad3/lap-smad3_treat_pileup.bdg --c2 differential_binding/treated/treated-lap-smad2/lap-smad3_control_lambda.bdg --d1 31588061 --d2 10967473 --o-prefix differential_binding/treated/diffpeak_results/diff_lap-smad2_vs_lap-smad3
+macs2 bdgdiff --t1 differential_binding/treated/treated-lap-smad2/lap-smad2_treat_pileup.bdg --c1 differential_binding/treated/treated-lap-smad2/lap-smad2_control_lambda.bdg --t2 differential_binding/treated/treated-lap-smad3/lap-smad3_treat_pileup.bdg --c2 differential_binding/treated/treated-lap-smad2/lap-smad3_control_lambda.bdg --d1 31588061 --d2 10967473 --o-prefix differential_binding/treated/treated-diffpeak_results/diff_lap-smad2_vs_lap-smad3
 ```
 
 
@@ -148,7 +148,7 @@ macs2 bdgdiff --t1 differential_binding/treated/treated-lap-smad2/lap-smad2_trea
 
 
 ```bash
-macs2 bdgdiff --t1 differential_binding/treated/treated-lap-smad2/lap-smad2_treat_pileup.bdg --c1 differential_binding/treated/treated-lap-smad2/lap-smad2_control_lambda.bdg --t2 differential_binding/treated/treated-native-smad3/native-smad3_treat_pileup.bdg --c2 differential_binding/treated/treated-native-smad3/native-smad3_control_lambda.bdg --d1 31588061 --d2 19110302 --o-prefix differential_binding/treated/diffpeak_results/diff_lap-smad2_vs_native-smad3
+macs2 bdgdiff --t1 differential_binding/treated/treated-lap-smad2/lap-smad2_treat_pileup.bdg --c1 differential_binding/treated/treated-lap-smad2/lap-smad2_control_lambda.bdg --t2 differential_binding/treated/treated-native-smad3/native-smad3_treat_pileup.bdg --c2 differential_binding/treated/treated-native-smad3/native-smad3_control_lambda.bdg --d1 31588061 --d2 19110302 --o-prefix differential_binding/treated/treated-diffpeak_results/diff_lap-smad2_vs_native-smad3
 ```
 
 ---

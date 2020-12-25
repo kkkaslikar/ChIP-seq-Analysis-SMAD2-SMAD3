@@ -1,7 +1,7 @@
 ---
-title: "Smad2 vs Smad3 Differential Binding Analysis without TGF-beta Treatment"
+title: "Smad2 vs Smad3 Differential Binding Analysis after TGF-beta Treatment"
 author: "Kaushal K. Kaslikar (A0138855R)"
-date: "10/29/2019"
+date: "9/20/2019"
 output: 
   html_notebook:
     number_sections: true
@@ -14,14 +14,9 @@ output:
 ---
 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-
 # Brief summary of analysis
 
-Differential peaks were called on ChIP-seq data for Smad2 and Smad3 antibodies in cells untreated with TGF-beta. Peaks were called using macs2 to generate bedgraph files, which were then used to call differential peaks using the macs2 bdgdiff module. The following comparisons were made during differential binding:
+Differential peaks were called on ChIP-seq data for Smad2- and Smad3-treated cells. Peaks were called using macs2 to generate bedgraph files, which were then used to call differential peaks using the macs2 bdgdiff module. The following comparisons were made during differential binding:
 
 1. LAP-Smad2 peaks vs LAP-Smad3 peaks
 2. LAP-Smad2 peaks vs native-Smad3 peaks
@@ -46,6 +41,8 @@ library(org.Hs.eg.db)
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 library(ChIPseeker)
 library(clusterProfiler)
+library(kableExtra)
+
 ```
 
 ## LAP-Smad2 vs LAP-Smad3
@@ -53,18 +50,18 @@ library(clusterProfiler)
 ### Creating GRanges objects from bedgraph files
 
 
-```{r ls2-vs-ls3-creating-GRanges-from-bedgraph-files, results='hide', warning=FALSE, message=FALSE, eval=TRUE}
+```{r ls2-vs-ls3-creating-GRanges-from-bedgraph-files}
 
-bed_ls2_vs_ls3_smad2enriched <- read_tsv("./untreated-diffpeak_results/untreated-diff_lap-smad2_vs_lap-smad3_c3.0_cond1.bed", skip = 1, col_names = c("chrom", "start", "end", "name", "log10_likelihood_ratio"))
+bed_ls2_vs_ls3_smad2enriched <- read_tsv("./treated-diffpeak_results/diff_lap-smad2_vs_lap-smad3_c3.0_cond1.bed", skip = 1, col_names = c("chrom", "start", "end", "name", "log10_likelihood_ratio"))
 
 ls2_vs_ls3_smad2enriched <- GRanges(seqnames = bed_ls2_vs_ls3_smad2enriched$chrom, ranges = IRanges(start = bed_ls2_vs_ls3_smad2enriched$start, end = bed_ls2_vs_ls3_smad2enriched$end), log10_LR = bed_ls2_vs_ls3_smad2enriched$log10_likelihood_ratio)
 
 
-bed_ls2_vs_ls3_smad3enriched <- read_tsv("./untreated-diffpeak_results/untreated-diff_lap-smad2_vs_lap-smad3_c3.0_cond2.bed", skip = 1, col_names = c("chrom", "start", "end", "name", "log10_likelihood_ratio"))
+bed_ls2_vs_ls3_smad3enriched <- read_tsv("./treated-diffpeak_results/diff_lap-smad2_vs_lap-smad3_c3.0_cond2.bed", skip = 1, col_names = c("chrom", "start", "end", "name", "log10_likelihood_ratio"))
 
 ls2_vs_ls3_smad3enriched <- GRanges(seqnames = bed_ls2_vs_ls3_smad3enriched$chrom, ranges = IRanges(start = bed_ls2_vs_ls3_smad3enriched$start, end = bed_ls2_vs_ls3_smad3enriched$end), log10_LR = bed_ls2_vs_ls3_smad3enriched$log10_likelihood_ratio)
 
-bed_ls2_vs_ls3_bothenriched <- read_tsv("./untreated-diffpeak_results/untreated-diff_lap-smad2_vs_lap-smad3_c3.0_common.bed", skip = 1, col_names = c("chrom", "start", "end", "name", "log10_likelihood_ratio"))
+bed_ls2_vs_ls3_bothenriched <- read_tsv("./treated-diffpeak_results/diff_lap-smad2_vs_native-smad3_c3.0_common.bed", skip = 1, col_names = c("chrom", "start", "end", "name", "log10_likelihood_ratio"))
 
 ls2_vs_ls3_bothenriched <- GRanges(seqnames = bed_ls2_vs_ls3_bothenriched$chrom, ranges = IRanges(start = bed_ls2_vs_ls3_bothenriched$start, end = bed_ls2_vs_ls3_bothenriched$end), log10_LR = bed_ls2_vs_ls3_bothenriched$log10_likelihood_ratio)
 
@@ -74,7 +71,7 @@ ls2_vs_ls3_bothenriched <- GRanges(seqnames = bed_ls2_vs_ls3_bothenriched$chrom,
 ### Annotating peaks
 
 
-```{r ls2-vs-ls3-annotating-GRanges, results='hide', warning=FALSE, message=FALSE, eval=TRUE}
+```{r ls2-vs-ls3-annotating-GRanges}
 
 TxDb <- TxDb.Hsapiens.UCSC.hg38.knownGene ### loading tx database for annotation
 
@@ -83,8 +80,11 @@ ap_ls2_vs_ls3_smad2enriched <- annotatePeak(peak = ls2_vs_ls3_smad2enriched, TxD
 ap_ls2_vs_ls3_smad3enriched <- annotatePeak(peak = ls2_vs_ls3_smad3enriched, TxDb = TxDb, annoDb = "org.Hs.eg.db")
 
 ap_ls2_vs_ls3_bothenriched <- annotatePeak(peak = ls2_vs_ls3_bothenriched, TxDb = TxDb, annoDb = "org.Hs.eg.db")
+```
 
-### Creating tibbles from peak annotation data
+Tibbles (i.e., dataframes) were created from the peak annotation data.
+
+```{r}
 
 df_ls2_vs_ls3_smad2enriched <- AnnotationDbi::as.data.frame(ap_ls2_vs_ls3_smad2enriched) %>% as_tibble() %>% 
   dplyr::select(seqnames, start, end, width, annotation, GENENAME, log10_LR, SYMBOL, geneId, ENSEMBL, everything())
@@ -100,6 +100,8 @@ df_ls2_vs_ls3_bothenriched <- AnnotationDbi::as.data.frame(ap_ls2_vs_ls3_bothenr
 
 
 ### Extracting unique list of genes containing promoter-proximal peaks
+
+A unique list of genes was created corresponding to peaks binding near the promoter, in order to better understand which genes were being regulated by Smad2 and Smad3 in a differential manner.
 
 
 ```{r ls2-vs-ls3-promoter-gene-list, results='hide', warning=FALSE, message=FALSE, eval=TRUE}
@@ -123,11 +125,12 @@ prom_genes_ls2_vs_ls3_bothenriched <-  df_ls2_vs_ls3_bothenriched %>% filter(str
 ```
 
 
-#### Genes containing promoter-proximal differentially enriched Smad2 peaks
+#### Genes containing promoter-proximal differentially-bound Smad2 peaks
+
+Very few genes were detected with differentially-bound Smad2 peaks near the promoter.
 
 
 ```{r}
-
 prom_genes_ls2_vs_ls3_smad2enriched
 
 ```
@@ -135,14 +138,15 @@ prom_genes_ls2_vs_ls3_smad2enriched
 
 #### Genes containing promoter-proximal differentially enriched Smad3 peaks
 
+On the other hand, numerous genes were detected with differentially-bound Smad3 peaks near the promoter.
 
 ```{r}
 prom_genes_ls2_vs_ls3_smad3enriched
-
 ```
 
 #### Genes with promoter-proximal peaks which are not significantly differentially enriched for either Smad2 or Smad3 binding
 
+The following were the genes whose promoters were not differentially-bound by either Smad2 or Smad2.
 
 ```{r}
 
@@ -170,6 +174,7 @@ intersect(prom_genes_ls2_vs_ls3_smad2enriched$GENENAME, prom_genes_ls2_vs_ls3_sm
 intersect(prom_genes_ls2_vs_ls3_smad2enriched$GENENAME, prom_genes_ls2_vs_ls3_bothenriched$GENENAME) %>% 
   tibble::enframe(name = "No.", value = "Promoter-proximal peak annotations") %>% 
   tidyr::drop_na()
+
 ```
 
 #### Genes common to both the Smad3-differentially enriched peak set and the non-differentially expressed peak set
@@ -200,6 +205,7 @@ dplyr::union(intersect(prom_genes_ls2_vs_ls3_smad2enriched$GENENAME, prom_genes_
   dplyr::union(., intersect(prom_genes_ls2_vs_ls3_smad2enriched$GENENAME, prom_genes_ls2_vs_ls3_smad3enriched$GENENAME)) %>% 
   tibble::enframe(name = "No.", value = "'Ambiguous' genes") %>% 
   tidyr::drop_na()
+
 ```
 
 
@@ -217,18 +223,18 @@ ambi_ls2_vs_ls3 <- dplyr::union(intersect(prom_genes_ls2_vs_ls3_smad2enriched$ge
 
 ### GO term enrichment analysis
 
-The "ambiguous" genes were filtered out from the genes with Smad2 or Smad3 differentially-enriched promoter-proximal peaks, and the remaining genes were subjected from GO term enrichment analysis. GO term annotations were limited to those related to biological processes (BP) and were filtered only to those having an adjusted p-value of below 0.05. The enriched GO terms were sorted first by adjusted p-values in ascending order, by their count of occurrences in descending order, and by their gene ratio in descending order.
+The "ambiguous" genes were filtered out from the genes with Smad2 or Smad3 differentially-enriched promoter-proximal peaks, and the remaining genes were subjected from GO term enrichment analysis. GO term annotations were limited to those related to biological processes (BP) and were filtered only to those having an adjusted p-value of 0.05. The enriched GO terms were sorted first by adjusted p-values in ascending order, by their count of occurrences in descending order, and by their gene ratio in descending order.
 
 #### GO terms enriched in Smad2-exclusive differentially enriched peaks
 
-**Note**: Since the code for the GO Term analysis takes a long time to process, the relevant code chunks carrying out the analysis in the Rmarkdown source code have been set to "eval = FALSE".The objects generated from the running of that code have been saved separately to the file "untreated-differential_binding_go_term.RData". To save time while generating the knitr output for this Rmarkdown document, they will be loaded directly from the aforementioned file in the following code chunk. However, the original source code chunks generating the objects themselves are still displayed. Should the need arise to generate the knitr output without resorting to loading data from "untreated-differential_binding_go_term.RData", please set "eval=FALSE" for the following code chunk and "eval=TRUE" for the GO Term analysis code chunks.
+**Note**: Since the code for the GO Term analysis takes a long time to process, the objects generated from the running of that code have been saved separately to the file "differential_binding_go_term.RData". To save time while generating the output for this Rmarkdown notebook, they will be loaded directly from the aforementioned file in the following code chunk, whenever needed. However, the original source code chunks generating the objects themselves are still displayed.
 
 
 ```{r}
 
 ### Code chunk was evaluated in this instance
 
-load("./untreated-differential_binding_go_term.RData")
+load("./differential_binding_go_term.RData")
 
 ```
 
@@ -245,7 +251,7 @@ prom_genes_ls2_vs_ls3_smad2enriched %>% filter(!geneId %in% ambi_ls2_vs_ls3)
 
 
 
-```{r eval=FALSE}
+```{r}
 
 ### Code chunk not evaluated in this instance
 ego_prom_genes_ls2_vs_ls3_smad2enriched <- enrichGO(gene = (prom_genes_ls2_vs_ls3_smad2enriched %>% filter(!geneId %in% ambi_ls2_vs_ls3) %>% dplyr::select(geneId) %>% unlist(use.names = FALSE)), org.Hs.eg.db, ont = "BP", pAdjustMethod = "BH", readable = TRUE)
@@ -253,8 +259,8 @@ ego_prom_genes_ls2_vs_ls3_smad2enriched <- enrichGO(gene = (prom_genes_ls2_vs_ls
 
 ```
 
+The results below can be a little misleading, since the list of enriched GO Terms is derived from a list of genes which is only 2 in number. Hence, the miniscule number of genes (2) forming the denominator, compared to the background set, whose denominator is 18,493, will skew the results of the enrichment analysis. The above enrichment analysis, therefore, would not be deemed accurate.
 
-Only one GO terms was found significantly enriched (i.e., with adjusted p value < 0.05) for Smad2-exclusive differentially enriched peaks.
 
 ```{r}
 
@@ -262,8 +268,7 @@ ego_prom_genes_ls2_vs_ls3_smad2enriched@result %>%
   as_tibble() %>% 
   arrange(p.adjust, desc(Count) , desc(GeneRatio))  %>% 
   filter(p.adjust < 0.05) %>%  
-  dplyr::select(Description, p.adjust, GeneRatio, BgRatio, geneID) %>% 
-  rmarkdown::paged_table()
+  dplyr::select(Description, p.adjust, GeneRatio, BgRatio, geneID)
 
 ```
 
@@ -278,21 +283,22 @@ prom_genes_ls2_vs_ls3_smad3enriched %>% filter(!geneId %in% ambi_ls2_vs_ls3)
 
 ```
 
+
 ```{r eval=FALSE}
-ego_prom_genes_ls2_vs_ls3_smad3enriched <- enrichGO(gene = (prom_genes_ls2_vs_ls3_smad3enriched %>% filter(!geneId %in% ambi_ls2_vs_ls3) %>% dplyr::select(geneId) %>% unlist(use.names = FALSE)), org.Hs.eg.db, ont = "BP", pAdjustMethod = "BH", readable = TRUE)
+ego_prom_genes_ls2_vs_ls3_smad3enriched <- enrichGO(gene = (prom_genes_ls2_vs_ls3_smad3enriched %>%
+                                                              filter(!geneId %in% ambi_ls2_vs_ls3) %>%
+                                                              dplyr::select(geneId) %>% unlist(use.names = FALSE)), org.Hs.eg.db, ont = "BP", pAdjustMethod = "BH", readable = TRUE)
 
 ```
 
-
-Terms related to cell adhesion comprised the top 3 GO terms in the list for Smad3-exclusive differentially enriched peaks. There were also multiple terms related to mitotic spindle assembly and organisation.
+The results of the Smad3 analysis can be deemed to be somewhat more accurate as compared to the Smad2 analysis, due to the comparatively longer list of non-ambiguous genes (1576).
 
 ```{r}
 ego_prom_genes_ls2_vs_ls3_smad3enriched@result %>%
    as_tibble() %>%
    arrange(p.adjust, desc(Count) , desc(GeneRatio))  %>%
    filter(p.adjust < 0.05) %>%
-   dplyr::select(Description, p.adjust, GeneRatio, BgRatio, geneID) %>% 
-  rmarkdown::paged_table()
+   dplyr::select(Description, p.adjust, GeneRatio, BgRatio, geneID)
 
 ```
 
@@ -303,19 +309,19 @@ ego_prom_genes_ls2_vs_ls3_smad3enriched@result %>%
 
 ### Creating GRanges objects from bedgraph files
 
-```{r ls2-vs-ns3-creating-GRanges-from-bedgraph-files, echo=TRUE}
+```{r ls2-vs-ns3-creating-GRanges-from-bedgraph-filesE}
 
-bed_ls2_vs_ns3_smad2enriched <- read_tsv("./untreated-diffpeak_results/untreated-diff_lap-smad2_vs_native-smad3_c3.0_cond1.bed", skip = 1, col_names = c("chrom", "start", "end", "name", "log10_likelihood_ratio"))
+bed_ls2_vs_ns3_smad2enriched <- read_tsv("./treated-diffpeak_results/diff_lap-smad2_vs_native-smad3_c3.0_cond1.bed", skip = 1, col_names = c("chrom", "start", "end", "name", "log10_likelihood_ratio"))
 
 ls2_vs_ns3_smad2enriched <- GRanges(seqnames = bed_ls2_vs_ns3_smad2enriched$chrom, ranges = IRanges(start = bed_ls2_vs_ns3_smad2enriched$start, end = bed_ls2_vs_ns3_smad2enriched$end), log10_LR = bed_ls2_vs_ns3_smad2enriched$log10_likelihood_ratio)
 
 ranges(ls2_vs_ns3_smad2enriched)
 
-bed_ls2_vs_ns3_smad3enriched <- read_tsv("./untreated-diffpeak_results/untreated-diff_lap-smad2_vs_native-smad3_c3.0_cond2.bed", skip = 1, col_names = c("chrom", "start", "end", "name", "log10_likelihood_ratio"))
+bed_ls2_vs_ns3_smad3enriched <- read_tsv("./treated-diffpeak_results/diff_lap-smad2_vs_native-smad3_c3.0_cond2.bed", skip = 1, col_names = c("chrom", "start", "end", "name", "log10_likelihood_ratio"))
 
 ls2_vs_ns3_smad3enriched <- GRanges(seqnames = bed_ls2_vs_ns3_smad3enriched$chrom, ranges = IRanges(start = bed_ls2_vs_ns3_smad3enriched$start, end = bed_ls2_vs_ns3_smad3enriched$end), log10_LR = bed_ls2_vs_ns3_smad3enriched$log10_likelihood_ratio)
 
-bed_ls2_vs_ns3_bothenriched <- read_tsv("./untreated-diffpeak_results/untreated-diff_lap-smad2_vs_native-smad3_c3.0_common.bed", skip = 1, col_names = c("chrom", "start", "end", "name", "log10_likelihood_ratio"))
+bed_ls2_vs_ns3_bothenriched <- read_tsv("./treated-diffpeak_results/diff_lap-smad2_vs_native-smad3_c3.0_common.bed", skip = 1, col_names = c("chrom", "start", "end", "name", "log10_likelihood_ratio"))
 
 ls2_vs_ns3_bothenriched <- GRanges(seqnames = bed_ls2_vs_ns3_bothenriched$chrom, ranges = IRanges(start = bed_ls2_vs_ns3_bothenriched$start, end = bed_ls2_vs_ns3_bothenriched$end), log10_LR = bed_ls2_vs_ns3_bothenriched$log10_likelihood_ratio)
 
@@ -323,20 +329,19 @@ ls2_vs_ns3_bothenriched <- GRanges(seqnames = bed_ls2_vs_ns3_bothenriched$chrom,
 
 ### Annotating peaks
 
-```{r ls2-vs-ns3-annotating-GRanges, results='hide', warning=FALSE, message=FALSE, eval=TRUE}
+```{r ls2-vs-ns3-annotating-GRanges}
 
 ap_ls2_vs_ns3_smad2enriched <- annotatePeak(peak = ls2_vs_ns3_smad2enriched, TxDb = TxDb, annoDb = "org.Hs.eg.db")
 
 ap_ls2_vs_ns3_smad3enriched <- annotatePeak(peak = ls2_vs_ns3_smad3enriched, TxDb = TxDb, annoDb = "org.Hs.eg.db")
 
 ap_ls2_vs_ns3_bothenriched <- annotatePeak(peak = ls2_vs_ns3_bothenriched, TxDb = TxDb, annoDb = "org.Hs.eg.db")
-
 ```
+
+### Creating tibbles from peak annotation data
 
 
 ```{r}
-
-### Creating tibbles from peak annotation data
 
 df_ls2_vs_ns3_smad2enriched <- AnnotationDbi::as.data.frame(ap_ls2_vs_ns3_smad2enriched) %>% as_tibble() %>% 
   dplyr::select(seqnames, start, end, width, annotation, GENENAME, log10_LR, SYMBOL, geneId, ENSEMBL, everything())
@@ -386,7 +391,6 @@ prom_genes_ls2_vs_ns3_smad2enriched
 ```{r}
 
 prom_genes_ls2_vs_ns3_smad3enriched
-
 ```
 
 
@@ -405,8 +409,6 @@ prom_genes_ls2_vs_ns3_bothenriched
 
 #### Genes common to both the Smad2-differentially enriched peak set and the Smad3-differentially enriched peak set
 
-Only three genes were found common to both the Smad2-differentially enriched peak set and the Smad3-differentially expressed peak set were found.
-
 
 ```{r}
 
@@ -419,12 +421,10 @@ intersect(prom_genes_ls2_vs_ns3_smad2enriched$GENENAME, prom_genes_ls2_vs_ns3_sm
 
 #### Genes common to both the Smad2-differentially enriched peak set and the non-differentially expressed peak set
 
-No genes common to both the Smad2-differentially enriched peak set and the non-differentially expressed peak set were found.
-
 
 ```{r}
 
-intersect(prom_genes_ls2_vs_ns3_smad2enriched$GENENAME, prom_genes_ls2_vs_ns3_bothenriched$GENENAME) %>% 
+intersect(prom_genes_ls2_vs_ns3_smad2enriched$GENENAME, prom_genes_ls2_vs_ns3_bothenriched$GENENAME) %>% # finding common peaks between LAP-Smad2 and LAP-Smad3
   tibble::enframe(name = "No.", value = "Promoter-proximal peak annotations") %>% 
   tidyr::drop_na()
 
@@ -435,20 +435,15 @@ intersect(prom_genes_ls2_vs_ns3_smad2enriched$GENENAME, prom_genes_ls2_vs_ns3_bo
 #### Genes common to both the Smad3-differentially enriched peak set and the non-differentially expressed peak set
 
 
-Only one gene common to both Smad3-differentially enriched peak set and the non-differentially expressed peak set was found.
-
-
 ```{r}
-intersect(prom_genes_ls2_vs_ns3_smad3enriched$GENENAME, prom_genes_ls2_vs_ns3_bothenriched$GENENAME) %>% 
+intersect(prom_genes_ls2_vs_ns3_smad3enriched$GENENAME, prom_genes_ls2_vs_ns3_bothenriched$GENENAME) %>% # finding common peaks between LAP-Smad2 and LAP-Smad3
   tibble::enframe(name = "No.", value = "Promoter-proximal peak annotations") %>% 
-  tidyr::drop_na() %>% 
-  rmarkdown::paged_table()
+  tidyr::drop_na()
 
 ```
 
 #### Collecting a list of "ambiguous" genes
 
-The "ambiguous" genes found were similar to the ones in treated cells.
 
 ```{r}
 
@@ -480,15 +475,7 @@ ambi_ls2_vs_ns3 <- dplyr::union(intersect(prom_genes_ls2_vs_ns3_smad2enriched$ge
 
 #### GO terms enriched in Smad2-exclusive differentially enriched peaks
 
-
-```{r eval=FALSE}
-### Code chunk not evaluated in this instance
-ego_prom_genes_ls2_vs_ns3_smad2enriched <- enrichGO(gene = (prom_genes_ls2_vs_ns3_smad2enriched %>% filter(!geneId %in% ambi_ls2_vs_ns3) %>% dplyr::select(geneId) %>% unlist(use.names = FALSE)), org.Hs.eg.db, ont = "BP", pAdjustMethod = "BH", readable = TRUE)
-
-```
-
-
-Since there is only one gene in the list after filtering out the ambiguous gene, a GO term analysis would not be appropriate in this case.
+The following is the list of genes that was passed through the function for the GO Term analysis, after filtering out the ambiguous genes. This list of genes was considerably longer (n = 37) for the the current comparison, (i.e., LAP-Smad2 vs native-Smad3), as opposed to the corresponding list of genes (n = 2) for the previous comparison (LAP-Smad2 vs LAP-Smad3).
 
 ```{r}
 
@@ -497,7 +484,26 @@ prom_genes_ls2_vs_ns3_smad2enriched %>% filter(!geneId %in% ambi_ls2_vs_ns3)
 ```
 
 
+```{r}
+### performing GO term analysis for this list of genes
 
+ego_prom_genes_ls2_vs_ns3_smad2enriched <- enrichGO(gene = (prom_genes_ls2_vs_ns3_smad2enriched %>% filter(!geneId %in% ambi_ls2_vs_ns3) %>% dplyr::select(geneId) %>% unlist(use.names = FALSE)), org.Hs.eg.db, ont = "BP", pAdjustMethod = "BH", readable = TRUE)
+
+```
+
+
+No GO Terms were found to be differentially enriched in this list of genes.
+
+```{r}
+
+ego_prom_genes_ls2_vs_ns3_smad2enriched@result %>% 
+  as_tibble() %>% 
+  arrange(p.adjust, desc(Count) , desc(GeneRatio))  %>% 
+  filter(p.adjust < 0.05) %>%  
+  dplyr::select(Description, p.adjust, GeneRatio, BgRatio, geneID) %>% 
+  rmarkdown::paged_table()
+
+```
 
 
 #### GO terms enriched in Smad3-exclusive differentially enriched peaks
@@ -510,16 +516,14 @@ prom_genes_ls2_vs_ns3_smad3enriched %>% filter(!geneId %in% ambi_ls2_vs_ns3)
 
 ```
 
+Performing the GO-Term analysis.
 
+```{r}
 
-```{r eval=FALSE}
-### Code chunk not evaluated in this instance.
 ego_prom_genes_ls2_vs_ns3_smad3enriched <- enrichGO(gene = (prom_genes_ls2_vs_ns3_smad3enriched %>% filter(!geneId %in% ambi_ls2_vs_ns3) %>% dplyr::select(geneId) %>% unlist(use.names = FALSE)), org.Hs.eg.db, ont = "BP", pAdjustMethod = "BH", readable = TRUE)
 
 ```
 
-
-Migration-related GO terms did not feature for the Smad3-exclusive differentially enriched peaks in untreated cells, unlike the treated cells.
 
 
 ```{r}
@@ -530,3 +534,9 @@ ego_prom_genes_ls2_vs_ns3_smad3enriched@result %>%
   dplyr::select(Description, p.adjust, GeneRatio, BgRatio, geneID) %>% 
   rmarkdown::paged_table()
 ```
+
+
+
+
+
+
