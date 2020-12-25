@@ -1,8 +1,0 @@
-differential_binding_go_term.RData
-differential_binding.html
-differential_binding_old.Rmd
-differential_binding.R
-differential_binding.RData
-differential_binding.Rmd
-peak_annotation_go_term_analysis.Rmd
-peak_annotation_go_term_analysis.tex

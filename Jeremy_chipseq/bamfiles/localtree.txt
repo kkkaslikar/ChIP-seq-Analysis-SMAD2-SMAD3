@@ -1,0 +1,11 @@
+.
+|-- ./FCC6CLFACXX-wHAPSI016408-113_L5_1.bam
+|-- ./FCC6CLFACXX-wHAPSI016409-133_L5_1.bam
+|-- ./LAP-treated_Smad3.bam
+|-- ./LAP-untreated_Smad3.bam
+|-- ./MDA-treated_Smad3.bam
+|-- ./MDA-untreated_Smad3.bam
+|-- ./input.bam
+`-- ./localtree.txt
+
+0 directories, 8 files
