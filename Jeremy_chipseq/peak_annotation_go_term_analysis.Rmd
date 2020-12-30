@@ -10,18 +10,13 @@ output:
 ---
 
 
+# Introduction
 
-\clearpage{}
-
-\tableofcontents
-
-\clearpage{}
+ Smad2 and Smad3 are both DNA-binding proteins that are activated by TGFβ signalling, and have differing downstream targets and phenotypic effects. The predominance of either the Smad2 or the Smad3 pathway over the other can determine the overall effect of signalling TGFβ . The aim of this analysis was to determine the difference between the Smad2 and the Smad3 axes of the TGFβ pathway, by looking at already-called ChIP-seq peaks for Smad2 and Smad3, and comparing the functional significance of their corresponding genes by looking at associated Gene Ontology terms.
 
 # Methods and Code
 
-**Note:** the following code takes a long time to run. Hence, it shall just be displayed here for transparency but will not be run to compile the document. 
-
-Instead, the objects from the image saved in "annotation\textunderscore go\textunderscore rough\textunderscore code.RData" after running this code will be loaded to present and discuss the results.  
+This section contains details of the analysis method and the code used to implement the analysis.
 
 ## Libraries
 
@@ -54,15 +49,6 @@ library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 library(ChIPseeker)
 library(clusterProfiler)
 library(kableExtra)
-```
-
-
-**Note:** Since the code takes a long time to run, the following file which contains the results of the analyses carried out by code will be loaded first, and the code will be displayed for transparency purposes, but will not be evaluated. 
-
-
-```{r eval = TRUE, echo=TRUE}
-load("annotation_go_results.RData")
-
 ```
 
 
