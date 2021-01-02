@@ -1,6 +1,6 @@
 ## Welcome to GitHub Pages
 
-Please refer to [this link](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/peak_annotation_go_term_analysis.nb.html) for peak annotation and GO term     analysis of normally-called peaks for Smad2 and Smad3. 
+Please refer to [this link](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/peak_annotation_go_term_analysis.nb.html) for peak annotation and GO term analysis of normally-called peaks for Smad2 and Smad3. 
 
 
 You can use the [editor on GitHub](https://github.com/kkkaslikar/ChIP-seq-Analysis-SMAD2-SMAD3/edit/gh-pages/docs/index.md) to maintain and preview the content for your website in Markdown files.
