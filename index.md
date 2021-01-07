@@ -5,8 +5,8 @@
 
 This section provides quick access to the analysis pages mentioned in the subsequent sections, all collected in one place.
 
-* [Preliminary peak annotation and GO term analysis](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/peak_annotation_go_term_analysis.nb.html)
-* [Code for performing the differential binding analysis](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/differential_binding_pipeline.html) 
+* [Preliminary peak annotation and GO term analysis](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/peak_annotation_go_term_analysis.nb.html)
+* [Code for performing the differential binding analysis](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding_pipeline.html) 
 
 # Introduction
 
@@ -28,11 +28,11 @@ It was determined that identifying the genes in which the ChIP-seq peaks fell, a
 
 # Preliminary analysis of peak annotation and GO terms
 
-As a preliminary analysis, peaks were first called for the treated and untreated LAP Smad2 and LAP Smad3 data using MACS2, in order to better explore the output of the peak annotation and to get a sense of the associated Gene Ontology terms. Please refer to [this link](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/peak_annotation_go_term_analysis.nb.html) for this analysis.
+As a preliminary analysis, peaks were first called for the treated and untreated LAP Smad2 and LAP Smad3 data using MACS2, in order to better explore the output of the peak annotation and to get a sense of the associated Gene Ontology terms. Please refer to [this link](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/peak_annotation_go_term_analysis.nb.html) for this analysis.
 
 # Differential binding analysis
 
 We decided that performing the analysis on *differentially*-called peaks would be a better way of appreciating differences between the Smad2 and Smad3 axes, rather than just looking at regularly-called peaks, since Smad2 and Smad3 share some binding sites. A differential peak would indicate more promiscous binding of one over the other at a particular location, and might indicate that a particular gene is more influenced by, for example, Smad3 rather than Smad2. Hence, such a gene would be part of the Smad3 axis rather than the Smad2 axis.
 
-Hence, differential binding analysis was performed on both the treated and untreated Smad2 and Smad3 data, for both the native as well as the GFP-targeted Smad3 antibody. The code used for the differential binding, as well as some of the output, is presented at [this link](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/differential_binding_pipeline.html)
+Hence, differential binding analysis was performed on both the treated and untreated Smad2 and Smad3 data, for both the native as well as the GFP-targeted Smad3 antibody. The code used for the differential binding, as well as some of the output, is presented at [this link](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding_pipeline.html)
 
