@@ -41,8 +41,9 @@ library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 library(ChIPseeker)
 library(clusterProfiler)
 library(kableExtra)
-
 ```
+
+
 
 ## LAP-Smad2 vs LAP-Smad3
 
@@ -67,14 +68,15 @@ ls2_vs_ls3_bothenriched <- GRanges(seqnames = bed_ls2_vs_ls3_bothenriched$chrom,
 
 ```
 
-
 ### Annotating peaks
 
 
-```{r ls2-vs-ls3-annotating-GRanges}
-
+```{r renaming-tx-database}
 TxDb <- TxDb.Hsapiens.UCSC.hg38.knownGene ### loading tx database for annotation
+```
 
+
+```{r ls2-vs-ls3-annotating-GRanges}
 ap_ls2_vs_ls3_smad2enriched <- annotatePeak(peak = ls2_vs_ls3_smad2enriched, TxDb = TxDb, annoDb = "org.Hs.eg.db")
 
 ap_ls2_vs_ls3_smad3enriched <- annotatePeak(peak = ls2_vs_ls3_smad3enriched, TxDb = TxDb, annoDb = "org.Hs.eg.db")
@@ -125,11 +127,6 @@ prom_genes_ls2_vs_ls3_bothenriched <-  df_ls2_vs_ls3_bothenriched %>% filter(str
 
 ```
 
-
-
-```{r echo = FALSE, results="hide"}
-save(list = ls(), file = "treated-differential_binding.RData")
-```
 
 
 #### Genes containing promoter-proximal differentially-bound Smad2 peaks
@@ -230,13 +227,6 @@ The "ambiguous" genes were filtered out from the genes with Smad2 or Smad3 diffe
 **Note**: Since the code for the GO Term analysis takes a long time to process, the objects generated from the running of that code have been saved separately to the file "differential_binding_go_term.RData". To save time while generating the output for this Rmarkdown notebook, they will be loaded directly from the aforementioned file in the following code chunk, whenever needed. However, the original source code chunks generating the objects themselves are still displayed.
 
 
-```{r echo=FALSE}
-### Code chunk was evaluated in this instance
-load("./differential_binding_go_term.RData")
-
-```
-
-
 The following is the list of genes that was passed through the function for the GO Term analysis, after filtering out the ambiguous genes.
 
 ```{r}
@@ -302,10 +292,6 @@ Regulation of GTPase activity seemed to be a common theme among the enriched GO 
 dotplot(ego_prom_genes_ls2_vs_ls3_smad3enriched) + 
   ggtitle(label = "Enriched BP GO Terms in SMAD3-exclusive Differential Peaks") +
   theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
-```
-
-```{r echo = FALSE, results="hide"}
-save(list = ls(), file = "treated-differential_binding.RData")
 ```
 
 ---
@@ -388,9 +374,7 @@ prom_genes_ls2_vs_ns3_bothenriched <-  df_ls2_vs_ns3_bothenriched %>% filter(str
 There were around 50 genes containing promoter-proximal differentially-enriched Smad2 peaks for the LAP-Smad2 vs native-Smad3 comparison. This might be the result of the anti-LAP 
 
 ```{r}
-
 prom_genes_ls2_vs_ns3_smad2enriched
-
 ```
 
 #### Genes containing promoter-proximal differentially-enriched Smad3 peaks
@@ -405,9 +389,12 @@ prom_genes_ls2_vs_ns3_smad3enriched
 
 
 ```{r}
-
 prom_genes_ls2_vs_ns3_bothenriched
+```
 
+
+```{r echo = FALSE, results="hide"}
+save(list = ls(), file = "treated-differential_binding.RData")
 ```
 
 
@@ -418,11 +405,9 @@ prom_genes_ls2_vs_ns3_bothenriched
 
 
 ```{r}
-
 intersect(prom_genes_ls2_vs_ns3_smad2enriched$GENENAME, prom_genes_ls2_vs_ns3_smad3enriched$GENENAME) %>% # finding common peaks between LAP-Smad2 and LAP-Smad3
   tibble::enframe(name = "No.", value = "Promoter-proximal peak annotations") %>% 
   tidyr::drop_na()
-
 ```
 
 
@@ -430,12 +415,9 @@ intersect(prom_genes_ls2_vs_ns3_smad2enriched$GENENAME, prom_genes_ls2_vs_ns3_sm
 
 
 ```{r}
-
 intersect(prom_genes_ls2_vs_ns3_smad2enriched$GENENAME, prom_genes_ls2_vs_ns3_bothenriched$GENENAME) %>% # finding common peaks between LAP-Smad2 and LAP-Smad3
   tibble::enframe(name = "No.", value = "Promoter-proximal peak annotations") %>% 
   tidyr::drop_na()
-
-
 ```
 
 
@@ -458,23 +440,24 @@ dplyr::union(intersect(prom_genes_ls2_vs_ns3_smad2enriched$GENENAME, prom_genes_
       intersect(prom_genes_ls2_vs_ns3_smad3enriched$GENENAME,prom_genes_ls2_vs_ns3_bothenriched$GENENAME)) %>% 
   dplyr::union(., intersect(prom_genes_ls2_vs_ns3_smad2enriched$GENENAME, prom_genes_ls2_vs_ns3_smad3enriched$GENENAME)) %>% 
   tibble::enframe(name = "No.", value = "'Ambiguous' genes") %>% 
-  tidyr::drop_na() %>% 
-  rmarkdown::paged_table()
+  tidyr::drop_na()
 
 ```
 
 
 
 ```{r}
-
 ### Assigning 'ambiguous' genes to a variable
 
 ambi_ls2_vs_ns3 <- dplyr::union(intersect(prom_genes_ls2_vs_ns3_smad2enriched$geneId, prom_genes_ls2_vs_ns3_bothenriched$geneId), intersect(prom_genes_ls2_vs_ns3_smad3enriched$geneId, prom_genes_ls2_vs_ns3_bothenriched$geneId)) %>% 
   dplyr::union(., intersect(prom_genes_ls2_vs_ns3_smad2enriched$geneId, prom_genes_ls2_vs_ns3_smad3enriched$geneId))
 
-
 ```
 
+
+```{r echo = FALSE, results="hide"}
+save(list = ls(), file = "treated-differential_binding.RData")
+```
 
 
 ### GO term enrichment analysis
@@ -507,8 +490,7 @@ ego_prom_genes_ls2_vs_ns3_smad2enriched@result %>%
   as_tibble() %>% 
   arrange(p.adjust, desc(Count) , desc(GeneRatio))  %>% 
   filter(p.adjust < 0.05) %>%  
-  dplyr::select(Description, p.adjust, GeneRatio, BgRatio, geneID) %>% 
-  rmarkdown::paged_table()
+  dplyr::select(Description, p.adjust, GeneRatio, BgRatio, geneID)
 
 ```
 
@@ -518,9 +500,7 @@ ego_prom_genes_ls2_vs_ns3_smad2enriched@result %>%
 The following is the list of genes that was passed through the function for the GO Term analysis, after filtering out the ambiguous genes.
 
 ```{r}
-
 prom_genes_ls2_vs_ns3_smad3enriched %>% filter(!geneId %in% ambi_ls2_vs_ns3)
-
 ```
 
 Performing the GO-Term analysis.
@@ -538,11 +518,12 @@ ego_prom_genes_ls2_vs_ns3_smad3enriched@result %>%
   as_tibble() %>% 
   arrange(p.adjust, desc(Count) , desc(GeneRatio))  %>% 
   filter(p.adjust < 0.05) %>%  
-  dplyr::select(Description, p.adjust, GeneRatio, BgRatio, geneID) %>% 
-  rmarkdown::paged_table()
+  dplyr::select(Description, p.adjust, GeneRatio, BgRatio, geneID)
 ```
 
-
+```{r echo = FALSE, results="hide"}
+save(list = ls(), file = "treated-differential_binding.RData")
+```
 
 
 
