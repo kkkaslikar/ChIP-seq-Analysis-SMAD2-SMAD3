@@ -100,7 +100,25 @@ df_ls2_vs_ls3_bothenriched <- AnnotationDbi::as.data.frame(ap_ls2_vs_ls3_bothenr
 ```
 
 
-# TODO: plot annopie to visualise percentage of promoter-proximal peaks
+### Looking at the percentage of promoter-proximal peaks
+
+
+```{r}
+plotAnnoPie(ap_ls2_vs_ls3_smad2enriched)
+title(main = "LAP-Smad2 vs LAP-Smad3\n Smad2-enriched\n Differential Peaks", line = -4, adj = 0)
+```
+
+
+```{r}
+plotAnnoPie(ap_ls2_vs_ls3_smad3enriched)
+title(main = "LAP-Smad2 vs LAP-Smad3\n Smad3-enriched\n Differential Peaks", line = -4, adj = 0)
+```
+
+
+```{r}
+plotAnnoPie(ap_ls2_vs_ls3_bothenriched)
+title(main = "LAP-Smad2 vs LAP-Smad3\n Both-enriched\n Differential Peaks", line = -4, adj = 0)
+```
 
 
 ### Extracting unique list of genes containing promoter-proximal peaks
@@ -296,8 +314,6 @@ dotplot(ego_prom_genes_ls2_vs_ls3_smad3enriched) +
 
 ---
 
-
-
 ## LAP-Smad2 vs native-Smad3
 
 ### Creating GRanges objects from bedgraph files
@@ -330,6 +346,28 @@ ap_ls2_vs_ns3_smad3enriched <- annotatePeak(peak = ls2_vs_ns3_smad3enriched, TxD
 
 ap_ls2_vs_ns3_bothenriched <- annotatePeak(peak = ls2_vs_ns3_bothenriched, TxDb = TxDb, annoDb = "org.Hs.eg.db")
 ```
+### Looking at the percentage of promoter-proximal peaks
+
+
+```{r}
+plotAnnoPie(ap_ls2_vs_ns3_smad2enriched)
+title(main = "LAP-Smad2 vs native-Smad3\n Smad2-enriched\n Differential Peaks", line = -4, adj = 0)
+```
+
+
+```{r}
+plotAnnoPie(ap_ls2_vs_ns3_smad3enriched)
+title(main = "LAP-Smad2 vs LAP-Smad3\n Smad3-enriched\n Differential Peaks", line = -4, adj = 0)
+```
+
+
+
+```{r}
+plotAnnoPie(ap_ls2_vs_ns3_bothenriched)
+title(main = "LAP-Smad2 vs LAP-Smad3\n Non-enriched\n Differential Peaks", line = -4, adj = 0)
+```
+
+
 
 ### Creating tibbles from peak annotation data
 
@@ -462,7 +500,6 @@ save(list = ls(), file = "treated-differential_binding.RData")
 
 ### GO term enrichment analysis
 
-
 #### GO terms enriched in Smad2-exclusive differentially enriched peaks
 
 The following is the list of genes that was passed through the function for the GO Term analysis, after filtering out the ambiguous genes. This list of genes was considerably longer (n = 37) for the the current comparison, (i.e., LAP-Smad2 vs native-Smad3), as opposed to the corresponding list of genes (n = 2) for the previous comparison (LAP-Smad2 vs LAP-Smad3).
@@ -506,7 +543,6 @@ prom_genes_ls2_vs_ns3_smad3enriched %>% filter(!geneId %in% ambi_ls2_vs_ns3)
 Performing the GO-Term analysis.
 
 ```{r}
-
 ego_prom_genes_ls2_vs_ns3_smad3enriched <- enrichGO(gene = (prom_genes_ls2_vs_ns3_smad3enriched %>% filter(!geneId %in% ambi_ls2_vs_ns3) %>% dplyr::select(geneId) %>% unlist(use.names = FALSE)), org.Hs.eg.db, ont = "BP", pAdjustMethod = "BH", readable = TRUE)
 
 ```
@@ -516,15 +552,23 @@ ego_prom_genes_ls2_vs_ns3_smad3enriched <- enrichGO(gene = (prom_genes_ls2_vs_ns
 ```{r}
 ego_prom_genes_ls2_vs_ns3_smad3enriched@result %>%
   as_tibble() %>% 
-  arrange(p.adjust, desc(Count) , desc(GeneRatio))  %>% 
+  arrange(p.adjust, desc(GeneRatio), desc(Count))  %>% 
   filter(p.adjust < 0.05) %>%  
   dplyr::select(Description, p.adjust, GeneRatio, BgRatio, geneID)
 ```
+Similar to the LAP-Smad2 versus LAP-Smad3 comparison, GO terms related to regulation of GTPase activity were once again present among the most enriched. However, terms related to cell morphogenesis, migration, cellular adhesion and cytoskeletal organisation and junction regulation also featured in the list of most-enriched GO terms. These GO terms were significantly different from those found for the LAP-Smad2 versus LAP-Smad3 comparison.
+
+```{r}
+dotplot(ego_prom_genes_ls2_vs_ns3_smad3enriched) +
+  ggtitle(label = "Enriched BP GO Terms in SMAD3-exclusive Differential Peaks") +
+  theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
+```
+
 
 ```{r echo = FALSE, results="hide"}
 save(list = ls(), file = "treated-differential_binding.RData")
 ```
 
 
-
+# Concluding remarks
 
