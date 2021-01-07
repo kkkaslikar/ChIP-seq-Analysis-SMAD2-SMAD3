@@ -5,7 +5,7 @@ output:
     toc: true
     toc_float:
       smooth_scroll: true
-      collapsed: true
+      collapsed: false
     number_sections: true
 ---
 
@@ -136,11 +136,14 @@ ap_v
 ### Create annotated peak objects and assign them to names in ap_v
 ```
 
-```{r, eval = FALSE, tidy=TRUE, echo=TRUE}
+```{r, eval = TRUE, tidy=TRUE, echo=TRUE}
 for(i in seq_along(grl)){
   assign(x = ap_v[i], value = annotatePeak(peak = grl[[i]], TxDb = TxDb, annoDb = "org.Hs.eg.db"))
 }
+```
 
+
+```{r, eval = TRUE, tidy=TRUE, echo=TRUE}
 AP_SMAD2_abInput_treated_peaks
 ```
 
@@ -150,7 +153,7 @@ df_ap_v <- paste0("df_", ap_v) ## variable names for tibbles derived from annota
 df_ap_v
 ```
 
-```{r, eval = FALSE, tidy=TRUE, echo=TRUE}
+```{r, eval = TRUE, tidy=TRUE, echo=TRUE}
 ### Create tibbles from annotated peak objects listed in ap_v and assign them to names in df_ap_v
 
 for(i in seq_along(ap_v)){
@@ -159,17 +162,21 @@ for(i in seq_along(ap_v)){
            AnnotationDbi::as.data.frame() %>% 
            as_tibble()) 
 }
+```
 
+
+```{r, eval = TRUE, tidy=TRUE, echo=TRUE}
 df_AP_SMAD2_abInput_treated_peaks
 
 ```
 
-```{r, eval = FALSE, tidy=TRUE, echo=TRUE}
+```{r tidy=TRUE, echo=TRUE}
 ## variable names for tibbles derived from annotated peaks limited to promoter annotations
 
-prom_df_ap_v <- paste0("prom_df_", ap_v) 
+prom_df_ap_v <- paste0("prom_df_", ap_v)
 prom_df_ap_v
 ```
+
 
 ```{r, eval = FALSE, tidy=TRUE, echo=TRUE}
 ### Create subset of tibbles from variable names listed in df_ap_v and assign them to variable names in prom_df_ap_v
@@ -182,12 +189,19 @@ for(i in seq_along(df_ap_v)){
 prom_df_AP_SMAD2_abInput_treated_peaks
 
 ```
+
+
+
 ```{r, eval = FALSE, tidy=TRUE, echo=TRUE}
 ## variable names for tibbles derived from annotated peaks limited to gene region annotations
 
 gen_df_ap_v <- paste0("gen_df_", ap_v) 
 
 gen_df_ap_v
+```
+
+
+```{r, eval = FALSE, tidy=TRUE, echo=TRUE}
 ### Filter tibbles with variable names listed in df_ap_v to discard rows with "Distal Intergenic" or "Downstream" annotations and assign them to names in gen_df_ap_v. 
 
 for(i in seq_along(df_ap_v)){
@@ -195,22 +209,25 @@ for(i in seq_along(df_ap_v)){
            eval() %>% 
            filter(!str_detect(annotation, "Distal Intergenic|Downstream")))
 }
+```
 
+
+```{r, eval = FALSE, tidy=TRUE, echo=TRUE}
 gen_df_AP_SMAD3_LAP_treated_peaks
-
 ```
 
 ## GO Term Enrichment Analysis of Annotated Peaks
 
 GO term enrichment analysis of the annotated peaks was carried out using the **ClusterProfiler** package. Analysis was carried out for all four conditions and each subset of annotated peaks  within each condition (all peaks, promoter-limited peaks and genic region-limited peaks). 
 
-**Note:** The following code takes *very* long to run. 
+**Note:** The following code takes *very* long to run.
+
+### GO term enrichment for all peaks
 
 
 ```{r eval=FALSE, tidy = TRUE, echo=TRUE}
 
 ego_v <- paste0("ego_", v) ### Vector of variable names for go term enrichment objects
-
 
 
 for(i in seq_along(ego_v)){ 
@@ -222,16 +239,17 @@ for(i in seq_along(ego_v)){
   if(!nrow(as.data.frame(ego)) == 0) 
     assign(x = ego_v[i], value = ego)}
 
-rm(ego)
+
 ```
 
 
-```{r eval=FALSE, tidy = TRUE, echo=TRUE}
-ego_SMAD2_abInput_treated_peaks
+```{r tidy = TRUE, echo=TRUE}
+ego_SMAD2_abInput_treated_peaks ## representative example of an enrichGO object
 ```
 
+### GO term enrichment for promoter-proximal peaks
 
-```{r eval=FALSE, tidy = TRUE, echo=TRUE}
+```{r tidy = TRUE, echo=TRUE}
 ### Vector of variable names for go term enrichment objects limited to promoter peaks
 
 prom_ego_v <- ego_v <- paste0("prom_ego_", v) 
@@ -240,9 +258,9 @@ prom_ego_v
 
 ```
 
-```{r eval=FALSE, tidy = TRUE, echo=TRUE}
+```{r eval=TRUE, tidy = TRUE, echo=TRUE}
 
-### Performing go term analysis using the clusterprofiler package and assigning the results to the variables in gen_ego_v
+### Performing go term analysis using the clusterprofiler package and assigning the results to the variables in prom_ego_v
 
 for(i in seq_along(prom_ego_v)){ 
   ego <- parse(text = prom_df_ap_v[i]) %>% 
@@ -257,13 +275,18 @@ prom_ego_SMAD2_abInput_treated_peaks
 
 ```
 
+### GO term enrichment for peaks lying within genic regions
 
 ```{r eval=FALSE, tidy = TRUE, echo=TRUE}
-
 ### Vector of variable names for go term enrichment objects limited to genic region peaks
 
-gen_ego_v <- paste0("gen_ego_", v) 
+gen_ego_v <- paste0("gen_ego_", v)
 
+gen_ego_v
+```
+
+
+```{r eval=FALSE, tidy = TRUE, echo=TRUE}
 ### Performing go term analysis using the clusterprofiler package and assigning the results to the variables in gen_ego_v
 
 for(i in seq_along(gen_ego_v)){ 
@@ -282,10 +305,7 @@ rm(ego) ## removing unnecessary variable ego
 
 
 
-Results of analysis were saved in the following file:
-
-
-```{r}
+```{r echo = FALSE}
 save.image(file = "annotation_go_results.RData")
 ```
 
@@ -293,9 +313,9 @@ save.image(file = "annotation_go_results.RData")
 
 # Results
 
-## Peak Annotation Results
+## Peak annotation results
 
-### SMAD2 Peaks - Untreated
+### SMAD2 peaks - untreated
 
 Most of the untreated SMAD2 peaks were in the distal intergenic regions (about 86\%).  
 
@@ -304,9 +324,9 @@ plotAnnoPie(AP_SMAD2_abInput_untreated_peaks)
 title(main = "SMAD2 Peaks: Untreated", line = -2, adj = 0)
 ```
 
-\clearpage{}
 
-### SMAD2 Peaks - Treated
+
+### SMAD2 peaks - treated
 
 Similar to the untreated SMAD2 peaks, most of the treated SMAD2 peaks also lay within the intergenic regions ( about 71\%), but in a lower proportion as compared to the untreated peaks (about 86\%). On the other hand, the proportion of SMAD2 peaks in the genic regions rose upon treatment from `r 100 - (0.35 + 86.37)`\% to `r 100 - (0.46 + 70.01)`\%. 
 
@@ -317,7 +337,7 @@ title(main = "SMAD2 Peaks: Treated", line = -2, adj = 0)
 
 \clearpage{}
 
-### SMAD3 Peaks - Untreated
+### SMAD3 peaks - untreated
 
 Around half of the untreated SMAD3 peaks were in the intergenic regions, while a majority of the peaks in the genic regions (`r 10.04 + 23.8` \%) overlapped with intronic sequences. Compared to the SMAD2 peaks (both treated and untreated), the SMAD3 untreated peaks had a far lower proportion of peaks within the intergenic regions. On the other hand, the proportion of SMAD3 peaks in intronic regions was noticeably elevated as compared to the SMAD2 peaks.
 
@@ -330,7 +350,7 @@ title(main = "SMAD3 Peaks: Untreated", line = -2, adj = 0)
 
 \clearpage{}
 
-### SMAD3 Peaks - Treated
+### SMAD3 peaks - treated
 
 TGF-$\beta$ ligand treatment reduced the proportion of SMAD3 peaks in the intergenic regions (`r 51.45 + 0.83`\% without treatment vs. `r 40.78 + 0.88`\% with treatment). For the most part, those peaks seem to have been displaced to the promoter regions, which accounted for a total of `r 5.74 + 3.05 + 2.7`\% before treatment but rose to `r 9.71 + 4.61 + 3.71`\% after treatment.     
 
@@ -342,12 +362,12 @@ title(main = "SMAD3 Peaks: Treated", line = -2, adj = 0)
 
 \clearpage{}
 
-## GO Term Analysis Results
+## GO term analysis results
 
 GO term analysis was limited to biological process (BP) terms; GO Terms relating to Cellular Component and Molecular Function were not analysed.
 
 
-### GO Term Analysis for All Peaks
+### GO term analysis for all peaks
 
 No enriched BP GO terms were found within annotations for untreated SMAD2 peaks. This may have been due to the majority of these peaks being located in the intergenic regions. For treated SMAD2 peaks, GO terms related to processes in neuronal development were over-represented. 
 
@@ -363,9 +383,6 @@ ego_SMAD2_abInput_treated_peaks@result %>%
   rename(Description = "Enriched GO Terms in Treated SMAD2 Peaks")
 ```
 
-\clearpage{}
-
-
 ```{r tidy = TRUE}
 dotplot(ego_SMAD2_abInput_treated_peaks) + 
   ggtitle(label = "Enriched BP GO Terms in Treated SMAD2 Peaks") + 
@@ -373,11 +390,7 @@ dotplot(ego_SMAD2_abInput_treated_peaks) +
 
 ```
 
-\clearpage{}
-
-
 Untreated SMAD3 peaks also showed an enrichment in neuronal development-related terms. In addition, peaks in regions related to GTPase activity and cell-cell adhesion were also enriched.  
-
 
 ```{r}
 ego_SMAD3_LAP_untreated_peaks@result %>% 
@@ -398,11 +411,7 @@ dotplot(ego_SMAD3_LAP_untreated_peaks) +
   theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
 ```
 
-\clearpage{}
-
-
 Similar terms related to neuronal development also appeared in treated SMAD3 peaks. However, additional enriched terms such as "regulation of small GTPase-mediated signal transduction", as well as "regulation of Ras protein signal transduction" were also found to be enriched. 
-
 
 ```{r}
 
@@ -415,17 +424,12 @@ ego_SMAD3_LAP_treated_peaks@result %>%
   rename(Description = "Enriched GO Terms in Treated SMAD3 Peaks")
 ```
 
-\clearpage{}
-
-
 ```{r}
 dotplot(ego_SMAD3_LAP_treated_peaks) + 
   ggtitle(label = "Enriched BP GO Terms in Treated SMAD3 Peaks") + 
   theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
 
 ```
-
-\clearpage{}
 
 ### GO Term Analysis for Peaks Restricted to Gene Regions
 
@@ -442,19 +446,11 @@ gen_ego_SMAD2_abInput_treated_peaks@result %>%
   rename(Description = "Enriched GO Terms in Treated SMAD2 Peaks Restricted to Gene Regions")
 ```
 
-\clearpage{}  
-
-
 ```{r}
-
 dotplot(gen_ego_SMAD2_abInput_treated_peaks) + ggtitle(label = "Enriched BP GO Terms in Treated SMAD2 Genic Peaks") + theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
-
 ```
 
-\clearpage{}
-
 Untreated SMAD3 peaks in gene regions showed a similar neuronal development theme for the most significantly enriched genes. 
-
 
 ```{r}
 gen_ego_SMAD3_LAP_untreated_peaks@result %>% 
@@ -465,23 +461,13 @@ gen_ego_SMAD3_LAP_untreated_peaks@result %>%
   rename(Description = "Enriched GO Terms in Untreated SMAD3 Peaks Restricted to Gene Regions")
 ```
 
-
-\clearpage{}  
-
-
 ```{r}
-
 dotplot(gen_ego_SMAD3_LAP_untreated_peaks ) + 
   ggtitle(label = "Enriched BP GO Terms in Untreated SMAD3 Genic Peaks") + 
   theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
-
 ```
 
-\clearpage{}
-
-
 Treated SMAD3 peaks in gene regions did not show too many chages either, as compared to the the set of all treated SMAD3 peaks.
-
 
 ```{r}
 gen_ego_SMAD3_LAP_treated_peaks@result %>% 
@@ -491,17 +477,12 @@ gen_ego_SMAD3_LAP_treated_peaks@result %>%
   rename(Description = "Enriched GO Terms in Treated SMAD3 Peaks Restricted to Gene Regions")
 ```
 
-\clearpage{}
-
 ```{r}
 dotplot(gen_ego_SMAD3_LAP_treated_peaks ) + 
   ggtitle(label = "Enriched BP GO Terms in Treated SMAD3 Genic Peaks") + 
   theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
 
 ```
-
-\clearpage{}
-
 
 ### GO Term Analysis for Peaks Restricted to Promoter Regions
 
@@ -518,16 +499,11 @@ prom_ego_SMAD2_abInput_untreated_peaks@result %>%
   rename(Description = "Enriched GO Terms in Untreated SMAD2 Peaks Restricted to Promoters")
 ```
 
-\clearpage{}
-
 ```{r}
 dotplot(prom_ego_SMAD2_abInput_untreated_peaks) + ggtitle(label = "Enriched BP GO Terms in Untreated SMAD2 Promoter Peaks") + theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
 ```
 
-\clearpage{}
-
 Untreated SMAD3 peaks restricted to promoters showed the least number of enriched terms, all of which were related to cell-cell adhesion. 
-
 
 ```{r}
 prom_ego_SMAD3_LAP_untreated_peaks@result %>% 
@@ -539,18 +515,12 @@ prom_ego_SMAD3_LAP_untreated_peaks@result %>%
   rename(Description = "Enriched GO Terms in Untreated SMAD3 Peaks Restricted to Promoters")
 ```
 
-\clearpage{}
-
 
 ```{r}
 dotplot(prom_ego_SMAD3_LAP_untreated_peaks) + 
   ggtitle(label = "Enriched BP GO Terms in Untreated SMAD3 Promoter Peaks") + 
-  theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
-
+  theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 5))
 ```
-
-
-\clearpage{}
 
 Treatment with ligand seemed to show many more enriched GO terms in promoter-restricted SMAD3 peaks, as compared to untreated promoter-restricted SMAD3 peaks. 
 
@@ -564,19 +534,9 @@ prom_ego_SMAD3_LAP_treated_peaks@result %>%
   rename(Description = "Enriched GO Terms in Treated SMAD3 Peaks Restricted to Promoters")
 ```
 
-\clearpage{}
-
 ```{r}
 dotplot(prom_ego_SMAD3_LAP_treated_peaks) + 
   ggtitle(label = "Enriched BP GO Term in Treated SMAD3 Promoter Peaks") + 
   theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
 ```
-
-
-
-
-
-
-
-
 

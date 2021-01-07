@@ -1,6 +1,6 @@
 ---
 title: "Smad2 vs Smad3 Differential Binding Analysis after TGF-beta Treatment"
-author: "Kaushal K. Kaslikar (A0138855R)"
+author: "Kaushal K. Kaslikar"
 date: "9/20/2019"
 output: 
   html_notebook:
@@ -15,7 +15,7 @@ output:
 
 # Brief summary of analysis
 
-Differential peaks were called on ChIP-seq data for Smad2- and Smad3-treated cells. Peaks were called using macs2 to generate bedgraph files, which were then used to call differential peaks using the macs2 bdgdiff module. The following comparisons were made during differential binding
+Differential peaks were called on ChIP-seq data for Smad2- and Smad3-treated cells. Peaks were called using MACS2 to generate bedgraph files, which were then used to call differential peaks using the MACS2 `bdgdiff` module. The following comparisons were made during differential binding
 
 1. LAP-Smad2 peaks vs LAP-Smad3 peaks
 2. LAP-Smad2 peaks vs native-Smad3 peaks
@@ -84,21 +84,6 @@ ap_ls2_vs_ls3_smad3enriched <- annotatePeak(peak = ls2_vs_ls3_smad3enriched, TxD
 ap_ls2_vs_ls3_bothenriched <- annotatePeak(peak = ls2_vs_ls3_bothenriched, TxDb = TxDb, annoDb = "org.Hs.eg.db")
 ```
 
-Tibbles (i.e., dataframes) were created from the peak annotation data.
-
-```{r}
-
-df_ls2_vs_ls3_smad2enriched <- AnnotationDbi::as.data.frame(ap_ls2_vs_ls3_smad2enriched) %>% as_tibble() %>% 
-  dplyr::select(seqnames, start, end, width, annotation, GENENAME, log10_LR, SYMBOL, geneId, ENSEMBL, everything())
-
-df_ls2_vs_ls3_smad3enriched <- AnnotationDbi::as.data.frame(ap_ls2_vs_ls3_smad3enriched) %>% as_tibble() %>% 
-  dplyr::select(seqnames, start, end, width, annotation, GENENAME, log10_LR, SYMBOL, geneId, ENSEMBL, everything())
-
-df_ls2_vs_ls3_bothenriched <- AnnotationDbi::as.data.frame(ap_ls2_vs_ls3_bothenriched) %>% as_tibble() %>% 
-  dplyr::select(seqnames, start, end, width, annotation, GENENAME, log10_LR, SYMBOL, geneId, ENSEMBL, everything())
-
-```
-
 
 ### Looking at the percentage of promoter-proximal peaks
 
@@ -120,6 +105,20 @@ plotAnnoPie(ap_ls2_vs_ls3_bothenriched)
 title(main = "LAP-Smad2 vs LAP-Smad3\n Both-enriched\n Differential Peaks", line = -4, adj = 0)
 ```
 
+### Creating tibbles from peak annotation data
+
+```{r}
+
+df_ls2_vs_ls3_smad2enriched <- AnnotationDbi::as.data.frame(ap_ls2_vs_ls3_smad2enriched) %>% as_tibble() %>% 
+  dplyr::select(seqnames, start, end, width, annotation, GENENAME, log10_LR, SYMBOL, geneId, ENSEMBL, everything())
+
+df_ls2_vs_ls3_smad3enriched <- AnnotationDbi::as.data.frame(ap_ls2_vs_ls3_smad3enriched) %>% as_tibble() %>% 
+  dplyr::select(seqnames, start, end, width, annotation, GENENAME, log10_LR, SYMBOL, geneId, ENSEMBL, everything())
+
+df_ls2_vs_ls3_bothenriched <- AnnotationDbi::as.data.frame(ap_ls2_vs_ls3_bothenriched) %>% as_tibble() %>% 
+  dplyr::select(seqnames, start, end, width, annotation, GENENAME, log10_LR, SYMBOL, geneId, ENSEMBL, everything())
+
+```
 
 ### Extracting unique list of genes containing promoter-proximal peaks
 
