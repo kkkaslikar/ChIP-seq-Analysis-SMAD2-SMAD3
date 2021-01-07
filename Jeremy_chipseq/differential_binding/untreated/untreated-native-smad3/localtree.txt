@@ -1,0 +1,9 @@
+.
+|-- ./localtree.txt
+|-- ./untreated-native-smad3_control_lambda.bdg
+|-- ./untreated-native-smad3_peaks.narrowPeak
+|-- ./untreated-native-smad3_peaks.xls
+|-- ./untreated-native-smad3_summits.bed
+`-- ./untreated-native-smad3_treat_pileup.bdg
+
+0 directories, 6 files

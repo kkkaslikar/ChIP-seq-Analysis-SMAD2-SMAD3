@@ -1,0 +1,9 @@
+.
+|-- ./lap-smad3_control_lambda.bdg
+|-- ./lap-smad3_peaks.narrowPeak
+|-- ./lap-smad3_peaks.xls
+|-- ./lap-smad3_summits.bed
+|-- ./lap-smad3_treat_pileup.bdg
+`-- ./localtree.txt
+
+0 directories, 6 files

@@ -1,0 +1,8 @@
+.
+|-- ./lap-smad2_peaks.narrowPeak
+|-- ./lap-smad2_peaks.xls
+|-- ./lap-smad2_summits.bed
+|-- ./lap-smad2_treat_pileup.bdg
+`-- ./localtree.txt
+
+0 directories, 5 files

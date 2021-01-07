@@ -1,0 +1,9 @@
+.
+|-- ./localtree.txt
+|-- ./untreated-lap-smad2_control_lambda.bdg
+|-- ./untreated-lap-smad2_peaks.narrowPeak
+|-- ./untreated-lap-smad2_peaks.xls
+|-- ./untreated-lap-smad2_summits.bed
+`-- ./untreated-lap-smad2_treat_pileup.bdg
+
+0 directories, 6 files
