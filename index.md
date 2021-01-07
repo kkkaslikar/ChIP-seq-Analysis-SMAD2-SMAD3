@@ -1,12 +1,12 @@
 
-[TOC]
-
 # Quick access links
 
 This section provides quick access to the analysis pages mentioned in the subsequent sections, all collected in one place.
 
 * [Preliminary peak annotation and GO term analysis](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/peak_annotation_go_term_analysis.nb.html)
+* [GO term analysis for TGFβ-treated differential peaks](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding_pipeline/treated/treated-differential_binding.nb.html)
 * [Code for performing the differential binding analysis](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding_pipeline.html) 
+
 
 # Introduction
 
@@ -36,3 +36,6 @@ We decided that performing the analysis on *differentially*-called peaks would b
 
 Hence, differential binding analysis was performed on both the treated and untreated Smad2 and Smad3 data, for both the native as well as the GFP-targeted Smad3 antibody. The code used for the differential binding, as well as some of the output, is presented at [this link](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding_pipeline.html)
 
+## Analysis of differential peaks
+
+Priority was given to the analysis of differential peaks from treated ChIP-seq samples, since our objective was to understand the difference between the Smad2 and Smad3 binding sites *after* TGFβ treatment. The rendered R notebook for this analysis is given at [https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding/treated/treated-differential_binding.nb.html]
