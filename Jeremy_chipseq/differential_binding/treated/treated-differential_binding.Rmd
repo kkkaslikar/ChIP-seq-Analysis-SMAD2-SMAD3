@@ -15,12 +15,12 @@ output:
 
 # Brief summary of analysis
 
-Differential peaks were called on ChIP-seq data for Smad2- and Smad3-treated cells. Peaks were called using MACS2 to generate bedgraph files, which were then used to call differential peaks using the MACS2 `bdgdiff` module. The following comparisons were made during differential binding
+Differential peaks were called on ChIP-seq data for Smad2- and Smad3-treated cells. Peaks were called using MACS2 to generate bedgraph files, which were then used to call differential peaks using the MACS2 `bdgdiff` module. The following comparisons were made during differential binding:
 
 1. LAP-Smad2 peaks vs LAP-Smad3 peaks
 2. LAP-Smad2 peaks vs native-Smad3 peaks
 
-The differential peak-calling module in macs2 gave 3 sets of differential peaks per comparison:
+The differential peak-calling module in MACS2 gave 3 sets of differential peaks per comparison:
 
 1. Peaks which were enriched in condition 1 (Smad2)
 2. Peaks which were enriched in condition 2 (Smad3)

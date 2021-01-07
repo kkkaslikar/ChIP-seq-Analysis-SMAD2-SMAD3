@@ -1,19 +1,18 @@
 
-
 [TOC]
 
 
 
 # Metadata
 
-| Sample ID                    |  Antibody Type          | TGF-beta Treatment |
-|------------------------------|-------------------------|--------------------|
-| FCC6CLFACXX-wHAPSI016408-113 | LAP Smad2 untreated     | Untreated          |
-| FCC6CLFACXX-wHAPSI016409-133 | LAP Smad2 treated       | Treated            |
-| S3o_GFP                      | LAP Smad3 treated       | Treated            |
-| S3xT_GFP                     | LAP Smad3 untreated     | Untreated          |
-| MDAo_Smad3                   | Native Smad3 treated    | Treated            |
-| MDAxT_Smad3                  |  Native Smad3 untreated | Untreated          |
+| Sample ID                    | Antibody Type                                             | TGFβ Treatment | Sample Reference Name  |
+| ---------------------------- | --------------------------------------------------------- | -------------- | ---------------------  |
+| FCC6CLFACXX-wHAPSI016408-113 | LAP Smad2 (targeting GFP portion of Smad2)                | Untreated      | LAP Smad2 Untreated    |
+| FCC6CLFACXX-wHAPSI016409-133 | LAP Smad2 (targeting GFP portion of Smad2)                | Treated        | LAP Smad2 Treated      |
+| S3xT_GFP                     | LAP Smad3 (targeting GFP portion of Smad3)                | Untreated      | LAP Smad3 Untreated    |
+| S3o_GFP                      | LAP Smad3 (targeting GFP portion of Smad3)                | Treated        | LAP Smad3 Treated      |
+| MDAxT_Smad3                  | Native Smad3 (targeting epitope in native Smad3 protein ) | Untreated      | Native Smad3 Untreated |
+| MDAo_Smad3                   | Native Smad3 (targeting epitope in native Smad3 protein ) | Treated        | Native Smad3 Untreated |
 
 
 # Creating a directory for storing files for differential binding
@@ -156,7 +155,7 @@ macs2 bdgdiff --t1 differential_binding/treated/treated-lap-smad2/lap-smad2_trea
 
 
 # Untreated sample differential peak-calling
-	
+
 ## Getting uniform extension size for running callpeak using `predictd`
 
 macs2 predictd -i ./bamfiles/LAP-untreated_Smad3.bam |tee -a predictd.txt
