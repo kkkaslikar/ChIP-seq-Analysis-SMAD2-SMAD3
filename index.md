@@ -34,5 +34,5 @@ As a preliminary analysis, peaks were first called for the treated and untreated
 
 We decided that performing the analysis on *differentially*-called peaks would be a better way of appreciating differences between the Smad2 and Smad3 axes, rather than just looking at regularly-called peaks, since Smad2 and Smad3 share some binding sites. A differential peak would indicate more promiscous binding of one over the other at a particular location, and might indicate that a particular gene is more influenced by, for example, Smad3 rather than Smad2. Hence, such a gene would be part of the Smad3 axis rather than the Smad2 axis.
 
-Hence, differential binding analysis was performed on both the treated and untreated Smad2 and Smad3 data, for both the native as well as the GFP-targeted Smad3 antibody. The code used for the differential binding, as well as some of the output, is presented at [this link]((https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/differential_binding_pipeline.html)
+Hence, differential binding analysis was performed on both the treated and untreated Smad2 and Smad3 data, for both the native as well as the GFP-targeted Smad3 antibody. The code used for the differential binding, as well as some of the output, is presented at [this link](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/differential_binding_pipeline.html)
 
