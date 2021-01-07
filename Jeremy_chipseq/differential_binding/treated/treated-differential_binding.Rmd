@@ -43,13 +43,13 @@ library(clusterProfiler)
 library(kableExtra)
 ```
 
-
+```{r echo = FALSE, results="hide"}
+load(file = "treated-differential_binding.RData")
+```
 
 ## LAP-Smad2 vs LAP-Smad3
 
 ### Creating GRanges objects from BED files
-
-Each differential binding...
 
 ```{r ls2-vs-ls3-creating-GRanges-from-bedgraph-files}
 
@@ -76,7 +76,7 @@ TxDb <- TxDb.Hsapiens.UCSC.hg38.knownGene ### loading tx database for annotation
 ```
 
 
-```{r ls2-vs-ls3-annotating-GRanges}
+```{r ls2-vs-ls3-annotating-GRanges, results='hide'}
 ap_ls2_vs_ls3_smad2enriched <- annotatePeak(peak = ls2_vs_ls3_smad2enriched, TxDb = TxDb, annoDb = "org.Hs.eg.db")
 
 ap_ls2_vs_ls3_smad3enriched <- annotatePeak(peak = ls2_vs_ls3_smad3enriched, TxDb = TxDb, annoDb = "org.Hs.eg.db")
@@ -118,6 +118,13 @@ df_ls2_vs_ls3_smad3enriched <- AnnotationDbi::as.data.frame(ap_ls2_vs_ls3_smad3e
 df_ls2_vs_ls3_bothenriched <- AnnotationDbi::as.data.frame(ap_ls2_vs_ls3_bothenriched) %>% as_tibble() %>% 
   dplyr::select(seqnames, start, end, width, annotation, GENENAME, log10_LR, SYMBOL, geneId, ENSEMBL, everything())
 
+```
+
+A peek at the structure of the tibbles:
+
+```{r}
+colnames(df_ls2_vs_ls3_smad2enriched)
+df_ls2_vs_ls3_smad2enriched
 ```
 
 ### Extracting unique list of genes containing promoter-proximal peaks
@@ -272,20 +279,16 @@ ego_prom_genes_ls2_vs_ls3_smad2enriched@result %>%
 
 ```
 
-
-
 #### GO terms enriched in Smad3-exclusive differentially enriched peaks
 
 The following is the list of genes that was passed through the function for the GO Term analysis, after filtering out the ambiguous genes.
 
 ```{r}
-
 prom_genes_ls2_vs_ls3_smad3enriched %>% filter(!geneId %in% ambi_ls2_vs_ls3)
-
 ```
 
 
-```{r eval=FALSE}
+```{r eval=TRUE, results='hide'}
 ego_prom_genes_ls2_vs_ls3_smad3enriched <- enrichGO(gene = (prom_genes_ls2_vs_ls3_smad3enriched %>%
                                                               filter(!geneId %in% ambi_ls2_vs_ls3) %>%
                                                               dplyr::select(geneId) %>% unlist(use.names = FALSE)), org.Hs.eg.db, ont = "BP", pAdjustMethod = "BH", readable = TRUE)
@@ -567,7 +570,4 @@ dotplot(ego_prom_genes_ls2_vs_ns3_smad3enriched) +
 ```{r echo = FALSE, results="hide"}
 save(list = ls(), file = "treated-differential_binding.RData")
 ```
-
-
-# Concluding remarks
 
