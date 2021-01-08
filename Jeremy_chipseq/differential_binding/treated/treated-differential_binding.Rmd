@@ -15,7 +15,13 @@ output:
 
 # Brief summary of analysis
 
-Differential peaks were called on ChIP-seq data for Smad2- and Smad3-treated cells. Peaks were called using MACS2 to generate bedgraph files, which were then used to call differential peaks using the MACS2 `bdgdiff` module. The following comparisons were made during differential binding:
+Differential peaks were called on ChIP-seq data for Smad2- and Smad3-treated cells. Peaks were called using MACS2 to generate bedgraph files, which were then used to call differential peaks using the MACS2 `bdgdiff` module. 
+
+ChIPseq against Smad3 was carried out using two different antibodies:
+1. One targeting the GFP portion of the Smad3 fusion protein.
+2. One targeting the 
+
+The following comparisons were made during differential binding:
 
 1. LAP-Smad2 peaks vs LAP-Smad3 peaks
 2. LAP-Smad2 peaks vs native-Smad3 peaks
@@ -86,6 +92,8 @@ ap_ls2_vs_ls3_bothenriched <- annotatePeak(peak = ls2_vs_ls3_bothenriched, TxDb 
 
 
 ### Looking at the percentage of promoter-proximal peaks
+
+The 
 
 
 ```{r}
@@ -180,7 +188,6 @@ The following were the genes whose promoters contained regions were not differen
 prom_genes_ls2_vs_ls3_bothenriched
 ```
 
-
 ### Getting a list of "ambiguous" genes by performing set operations on LAP-Smad2 vs LAP-Smad3 gene lists
 
 "Ambiguous" genes are those genes which cannot be said to have promoters containing exclusively Smad2- or exclusively Smad3-associated differentially enriched peaks. These genes primarily belong to three groups:
@@ -240,6 +247,12 @@ ambi_ls2_vs_ls3 <- dplyr::union(intersect(prom_genes_ls2_vs_ls3_smad2enriched$ge
 
 ```
 
+
+To further investigate "ambigouous" genes separately, the following variables from the workspace were saved to an RData object for loading during the investigation.
+
+```{r echo=TRUE, results="hide"}
+save( list = c("df_ls2_vs_ls3_bothenriched", "df_ls2_vs_ls3_smad2enriched", "df_ls2_vs_ls3_smad3enriched", "df_ls2_vs_ns3_bothenriched", "df_ls2_vs_ns3_smad2enriched", "df_ls2_vs_ns3_smad3enriched", "ambi_ls2_vs_ls3", "ambi_ls2_vs_ns3"), file = "Gviz_motif.RData")
+```
 
 
 ### GO term enrichment analysis

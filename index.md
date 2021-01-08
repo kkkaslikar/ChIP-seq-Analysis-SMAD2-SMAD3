@@ -14,16 +14,16 @@ Smad2 and Smad3 are both DNA-binding proteins that are activated by TGFβ signal
 
 ChIP-seq had been performed for Smad2 and Smad3 before and after TGF-beta treatment. In addition, two different antibodies had been used to perform the ChIP-seq for Smad3: an antibody targeting the GFP portion of the Smad3 fusion protein, and an antibody targeting an epitope found within native Smad3. Hence, in total, there were at least six separate conditions, which have been listed in the table below:
 
-| Sample ID                    | Antibody Type                                             | TGFβ Treatment | Sample Reference Name  |
-| ---------------------------- | --------------------------------------------------------- | -------------- | ---------------------  |
-| FCC6CLFACXX-wHAPSI016408-113 | LAP Smad2 (targeting GFP portion of Smad2)                | Untreated      | LAP Smad2 Untreated    |
-| FCC6CLFACXX-wHAPSI016409-133 | LAP Smad2 (targeting GFP portion of Smad2)                | Treated        | LAP Smad2 Treated      |
-| S3xT_GFP                     | LAP Smad3 (targeting GFP portion of Smad3)                | Untreated      | LAP Smad3 Untreated    |
-| S3o_GFP                      | LAP Smad3 (targeting GFP portion of Smad3)                | Treated        | LAP Smad3 Treated      |
-| MDAxT_Smad3                  | Native Smad3 (targeting epitope in native Smad3 protein ) | Untreated      | Native Smad3 Untreated |
-| MDAo_Smad3                   | Native Smad3 (targeting epitope in native Smad3 protein ) | Treated        | Native Smad3 Untreated |
+| Sample ID                    | Antibody Type                                           | TGFβ Treatment | Sample Reference Name  |
+| ---------------------------- | ------------------------------------------------------- | -------------- | ---------------------- |
+| FCC6CLFACXX-wHAPSI016408-113 | anti-GFP (targeting GFP portion of Smad2)               | Untreated      | LAP Smad2 Untreated    |
+| FCC6CLFACXX-wHAPSI016409-133 | Anti-GFP (targeting GFP portion of Smad2)               | Treated        | LAP Smad2 Treated      |
+| S3xT_GFP                     | Anti-GFP (targeting GFP portion of Smad3)               | Untreated      | LAP Smad3 Untreated    |
+| S3o_GFP                      | Anti-GFP (targeting GFP portion of Smad3)               | Treated        | LAP Smad3 Treated      |
+| MDAxT_Smad3                  | Anti-Smad3 (targeting epitope in native Smad3 protein ) | Untreated      | Native Smad3 Untreated |
+| MDAo_Smad3                   | Anti-Smad3 (targeting epitope in native Smad3 protein ) | Treated        | Native Smad3 Untreated |
 
- 
+
 It was determined that identifying the genes in which the ChIP-seq peaks fell, and performing a GO term analysis for these genes would be a good method to find out the differences between the Smad2 and Smad3 axes.
 
 # Preliminary analysis of peak annotation and GO terms
@@ -34,8 +34,8 @@ As a preliminary analysis, peaks were first called for the treated and untreated
 
 We decided that performing the analysis on *differentially*-called peaks would be a better way of appreciating differences between the Smad2 and Smad3 axes, rather than just looking at regularly-called peaks, since Smad2 and Smad3 share some binding sites. A differential peak would indicate more promiscous binding of one over the other at a particular location, and might indicate that a particular gene is more influenced by, for example, Smad3 rather than Smad2. Hence, such a gene would be part of the Smad3 axis rather than the Smad2 axis.
 
-Hence, differential binding analysis was performed on both the treated and untreated Smad2 and Smad3 data, for both the native as well as the GFP-targeted Smad3 antibody. The code used for the differential binding, as well as some of the output, is presented at [this link](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding_pipeline.html)
+Differential binding analysis was performed on both the treated and untreated Smad2 and Smad3 data, for both the native as well as the GFP-targeted Smad3 antibody. The code used for the differential binding, as well as some of the output, is presented at [this link](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding_pipeline.html)
 
 ## Analysis of differential peaks
 
-Priority was given to the analysis of differential peaks from treated ChIP-seq samples, since our objective was to understand the difference between the Smad2 and Smad3 binding sites *after* TGFβ treatment. The rendered R notebook for this analysis is given at [https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding/treated/treated-differential_binding.nb.html](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding/treated/treated-differential_binding.nb.html)
+Priority was given to the analysis of differential peaks from treated ChIP-seq samples, since our objective was to understand the difference between the Smad2 and Smad3 binding sites *after* TGFβ treatment. The rendered R notebook for this analysis is given at [this link](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding/treated/treated-differential_binding.nb.html)
