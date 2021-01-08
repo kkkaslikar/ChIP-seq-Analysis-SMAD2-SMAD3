@@ -4,8 +4,10 @@
 This section provides quick access to the analysis pages mentioned in the subsequent sections, all collected in one place.
 
 * [Preliminary peak annotation and GO term analysis](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/peak_annotation_go_term_analysis.nb.html)
+* [Code for performing the differential binding analysis](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding_pipeline.html)
 * [GO term analysis for TGFβ-treated differential peaks](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding/treated/treated-differential_binding.nb.html)
-* [Code for performing the differential binding analysis](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding_pipeline.html) 
+* [Investigating peaks in "ambiguous" ranges](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding/treated/Gviz_motif.nb.html)
+
 
 
 # Introduction
