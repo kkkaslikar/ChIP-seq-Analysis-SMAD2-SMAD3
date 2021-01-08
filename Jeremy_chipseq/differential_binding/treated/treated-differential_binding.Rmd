@@ -1,7 +1,6 @@
 ---
 title: "Smad2 vs Smad3 Differential Binding Analysis after TGF-beta Treatment"
 author: "Kaushal K. Kaslikar"
-date: "9/20/2019"
 output: 
   html_notebook:
     theme: flatly
