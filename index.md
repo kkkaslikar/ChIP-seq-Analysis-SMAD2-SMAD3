@@ -41,3 +41,7 @@ Differential binding analysis was performed on both the treated and untreated Sm
 ## Analysis of differential peaks
 
 Priority was given to the analysis of differential peaks from treated ChIP-seq samples, since our objective was to understand the difference between the Smad2 and Smad3 binding sites *after* TGFβ treatment. The rendered R notebook for this analysis is given at [this link](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding/treated/treated-differential_binding.nb.html)
+
+## Visualisation of "ambiguous" genes
+
+Genes whose promoters did not contain either exclusively Smad2-enriched peaks or Smad3-enriched peaks upon differential peak-calling were termed "ambiguous" genes. [This analysis](https://kkkaslikar.github.io/ChIP-seq-Analysis-SMAD2-SMAD3/Jeremy_chipseq/differential_binding/treated/Gviz_motif.nb.html) was an attempt at better understanding the distribution of peaks within the promoters of such "ambiguous" genes.
