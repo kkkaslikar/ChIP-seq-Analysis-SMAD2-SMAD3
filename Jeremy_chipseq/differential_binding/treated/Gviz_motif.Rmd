@@ -4,6 +4,7 @@ author: "Kaushal K. Kaslikar (A0138855R)"
 date: "9/25/2019"
 output: 
   html_notebook:
+    theme: flatly
     number_sections: true
     df_print: kable
     toc: true
