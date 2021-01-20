@@ -15,16 +15,22 @@ output:
 
 # Brief summary of analysis
 
-Differential peaks were called on ChIP-seq data for Smad2- and Smad3-treated cells. Peaks were called using MACS2 to generate bedgraph files, which were then used to call differential peaks using the MACS2 `bdgdiff` module. 
+ChIP-seq data was previously generated for the DNA-binding proteins Smad2 and Smad3, which are both downstream effectors of the TGFβ pathway, for cells before and after treatment with TGFβ.
+
+The ChIP-seq sample targeting Smad2 was designated as LAP Smad2.
 
 ChIPseq against Smad3 was carried out using two different antibodies:
-1. One targeting the GFP portion of the Smad3 fusion protein.
-2. One targeting the 
+1. One targeting the GFP portion of the Smad3 fusion protein (sample designated as LAP Smad3).
+2. One targeting the naturally-occurring Smad3 protein (sample designated as native Smad3).
+
+Differential binding analysis was performed on this ChIP-seq data for TGFβ-treated cells. The purpose of the analysis was to understand the functional difference between Smad2 and Smad3 axes of the TGFβ pathway.
+
+ChIP-seq peaks were called using MACS2 to generate bedgraph files, which were then used to call differential peaks using the MACS2 `bdgdiff` module.
 
 The following comparisons were made during differential binding:
 
-1. LAP-Smad2 peaks vs LAP-Smad3 peaks
-2. LAP-Smad2 peaks vs native-Smad3 peaks
+1. LAP Smad2 peaks vs LAP Smad3 peaks (hereafter referred to as LS2 vs LS3)
+2. LAP Smad2 peaks vs Native Smad3 peaks (hereafter referred to as LS2 vs NS3)
 
 The differential peak-calling module in MACS2 gave 3 sets of differential peaks per comparison:
 
@@ -41,6 +47,7 @@ The set of annotated peaks in each condition were filtered to only those associa
 
 ```{r libraries, results='hide', warning=FALSE, message=FALSE, eval=TRUE}
 library(tidyverse)
+library(ggVennDiagram)
 library(GenomicRanges)
 library(org.Hs.eg.db)
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
@@ -53,7 +60,7 @@ library(kableExtra)
 load(file = "treated-differential_binding.RData")
 ```
 
-## LAP-Smad2 vs LAP-Smad3
+## LAP Smad2 versus LAP Smad3
 
 ### Creating GRanges objects from BED files
 
@@ -74,6 +81,7 @@ ls2_vs_ls3_bothenriched <- GRanges(seqnames = bed_ls2_vs_ls3_bothenriched$chrom,
 
 ```
 
+
 ### Annotating peaks
 
 
@@ -88,29 +96,6 @@ ap_ls2_vs_ls3_smad2enriched <- annotatePeak(peak = ls2_vs_ls3_smad2enriched, TxD
 ap_ls2_vs_ls3_smad3enriched <- annotatePeak(peak = ls2_vs_ls3_smad3enriched, TxDb = TxDb, annoDb = "org.Hs.eg.db")
 
 ap_ls2_vs_ls3_bothenriched <- annotatePeak(peak = ls2_vs_ls3_bothenriched, TxDb = TxDb, annoDb = "org.Hs.eg.db")
-```
-
-
-### Looking at the percentage of promoter-proximal peaks
-
-The 
-
-
-```{r}
-plotAnnoPie(ap_ls2_vs_ls3_smad2enriched)
-title(main = "LAP-Smad2 vs LAP-Smad3\n Smad2-enriched\n Differential Peaks", line = -4, adj = 0)
-```
-
-
-```{r}
-plotAnnoPie(ap_ls2_vs_ls3_smad3enriched)
-title(main = "LAP-Smad2 vs LAP-Smad3\n Smad3-enriched\n Differential Peaks", line = -4, adj = 0)
-```
-
-
-```{r}
-plotAnnoPie(ap_ls2_vs_ls3_bothenriched)
-title(main = "LAP-Smad2 vs LAP-Smad3\n Both-enriched\n Differential Peaks", line = -4, adj = 0)
 ```
 
 ### Creating tibbles from peak annotation data
@@ -128,6 +113,7 @@ df_ls2_vs_ls3_bothenriched <- AnnotationDbi::as.data.frame(ap_ls2_vs_ls3_bothenr
 
 ```
 
+
 A peek at the structure of the tibbles:
 
 ```{r}
@@ -135,9 +121,64 @@ colnames(df_ls2_vs_ls3_smad2enriched)
 df_ls2_vs_ls3_smad2enriched
 ```
 
+
+### Looking at the percentage of promoter-proximal peaks {#ls2-vs-ls3-prom-prox}
+
+The total number of differential Smad2-enriched peaks is given below:
+
+```{r}
+df_ls2_vs_ls3_smad2enriched %>% 
+  tally()
+```
+
+
+There was a comparatively high percentage of promoter-proximal Smad2-enriched differential peaks  (`r 38.1 + 9.52 + 2.38`%).
+
+
+
+```{r}
+plotAnnoPie(ap_ls2_vs_ls3_smad2enriched)
+title(main = "LAP Smad2 vs LAP Smad3\n Smad2-enriched\n Differential Peaks", line = -4, adj = 0)
+```
+
+
+Compared to the differential  Smad2-enriched peaks, the total number of differential Smad3-enriched peaks was far higher:
+
+```{r}
+df_ls2_vs_ls3_smad3enriched %>% 
+  tally()
+```
+
+
+The percentage of promoter-proximal Smad3-enriched differential peaks, however, was modest compared to the Smad2 ones (`r 10.64 + 5.32 + 4.1`%). Ths might be because of the much much larger total number of differential Smad3-enriched peaks .
+
+
+```{r}
+plotAnnoPie(ap_ls2_vs_ls3_smad3enriched)
+title(main = "LAP Smad2 vs LAP Smad3\n Smad3-enriched\n Differential Peaks", line = -4, adj = 0)
+```
+
+
+The total number of peaks which were not particularly enriched for either Smad2 or Smad3 were far less than the the number of Smad3 peaks, but considerably greater than the number of peaks enriched for Smad2.
+
+
+```{r}
+df_ls2_vs_ls3_bothenriched %>% 
+  tally()
+```
+
+The percentage of promoter-proximal peaks was `r 12 + 4 + 3.2`%.
+
+```{r}
+plotAnnoPie(ap_ls2_vs_ls3_bothenriched)
+title(main = "LAP Smad2 vs LAP Smad3\n Both-enriched\n Differential Peaks", line = -4, adj = 0)
+```
+
+
+
 ### Extracting unique list of genes containing promoter-proximal peaks
 
-For both Smad2 and Smad3 respectively, a list of genes was identified whose promoter-proximal regions contained differentially-bound peaks.
+For both Smad2 and Smad3 respectively, a deduplicated list of genes was identified whose promoter-proximal regions contained the various categories of differentially-bound peaks.
 
 ```{r ls2-vs-ls3-promoter-gene-list, results='hide', warning=FALSE, message=FALSE, eval=TRUE}
 
@@ -160,15 +201,12 @@ prom_genes_ls2_vs_ls3_bothenriched <-  df_ls2_vs_ls3_bothenriched %>% filter(str
 ```
 
 
-
 #### Genes containing promoter-proximal differentially-bound Smad2 peaks
 
 Very few genes were detected with differentially-bound Smad2 peaks near the promoter.
 
-
 ```{r}
 prom_genes_ls2_vs_ls3_smad2enriched
-
 ```
 
 
@@ -188,7 +226,7 @@ The following were the genes whose promoters contained regions were not differen
 prom_genes_ls2_vs_ls3_bothenriched
 ```
 
-### Getting a list of "ambiguous" genes by performing set operations on LAP-Smad2 vs LAP-Smad3 gene lists
+### Getting a list of "ambiguous" genes by performing set operations on LS2 vs LS3 gene lists
 
 "Ambiguous" genes are those genes which cannot be said to have promoters containing exclusively Smad2- or exclusively Smad3-associated differentially enriched peaks. These genes primarily belong to three groups:
 
@@ -203,7 +241,7 @@ The complete list of "ambiguous" genes can be obtained by taking the union of th
 Firstly, we took a look at the list of genes common to both the Smad2-differentially enriched peak set and the Smad3-differentially enriched peak set. There were only four.
 
 ```{r}
-intersect(prom_genes_ls2_vs_ls3_smad2enriched$GENENAME, prom_genes_ls2_vs_ls3_smad3enriched$GENENAME) %>% # finding common peaks between LAP-Smad2 and LAP-Smad3
+intersect(prom_genes_ls2_vs_ls3_smad2enriched$GENENAME, prom_genes_ls2_vs_ls3_smad3enriched$GENENAME) %>% # finding common peaks between LAP Smad2 and LAP Smad3
   tibble::enframe(name = "No.", value = "Promoter-proximal peak annotations") %>% 
   tidyr::drop_na()
 ```
@@ -230,7 +268,6 @@ intersect(prom_genes_ls2_vs_ls3_smad3enriched$GENENAME, prom_genes_ls2_vs_ls3_bo
 Finally, we derived the list of ambigous genes by taking the union of the three gene lists above.
 
 ```{r}
-
 dplyr::union(intersect(prom_genes_ls2_vs_ls3_smad2enriched$GENENAME, prom_genes_ls2_vs_ls3_bothenriched$GENENAME), 
       intersect(prom_genes_ls2_vs_ls3_smad3enriched$GENENAME,prom_genes_ls2_vs_ls3_bothenriched$GENENAME)) %>% 
   dplyr::union(., intersect(prom_genes_ls2_vs_ls3_smad2enriched$GENENAME, prom_genes_ls2_vs_ls3_smad3enriched$GENENAME)) %>% 
@@ -248,7 +285,7 @@ ambi_ls2_vs_ls3 <- dplyr::union(intersect(prom_genes_ls2_vs_ls3_smad2enriched$ge
 ```
 
 
-To further investigate "ambigouous" genes separately, the following variables from the workspace were saved to an RData object for loading during the investigation.
+To further investigate "ambiguous" genes separately, the following variables from the workspace were saved to an RData object for loading during the investigation.
 
 ```{r echo=TRUE, results="hide"}
 save( list = c("df_ls2_vs_ls3_bothenriched", "df_ls2_vs_ls3_smad2enriched", "df_ls2_vs_ls3_smad3enriched", "df_ls2_vs_ns3_bothenriched", "df_ls2_vs_ns3_smad2enriched", "df_ls2_vs_ns3_smad3enriched", "ambi_ls2_vs_ls3", "ambi_ls2_vs_ns3"), file = "Gviz_motif.RData")
@@ -259,10 +296,9 @@ save( list = c("df_ls2_vs_ls3_bothenriched", "df_ls2_vs_ls3_smad2enriched", "df_
 
 The "ambiguous" genes were filtered out from the genes with Smad2 or Smad3 differentially-enriched promoter-proximal peaks, and the remaining genes were subjected from GO term enrichment analysis. GO term annotations were limited to those related to biological processes (BP) and were filtered only to those having an adjusted p-value of 0.05. The enriched GO terms were sorted first by adjusted p-values in ascending order, by their count of occurrences in descending order, and by their gene ratio in descending order.
 
-#### GO terms enriched in Smad2-exclusive differentially enriched peaks
+#### GO terms enriched in Smad2-exclusive differentially enriched peaks {#ls2-vs-ls3-smad2-prom-disamb}
 
 **Note**: Since the code for the GO Term analysis takes a long time to process, the objects generated from the running of that code have been saved separately to the file "differential_binding_go_term.RData". To save time while generating the output for this Rmarkdown notebook, they will be loaded directly from the aforementioned file in the following code chunk, whenever needed. However, the original source code chunks generating the objects themselves are still displayed.
-
 
 The following is the list of genes that was passed through the function for the GO Term analysis, after filtering out the ambiguous genes.
 
@@ -271,51 +307,46 @@ prom_genes_ls2_vs_ls3_smad2enriched %>% filter(!geneId %in% ambi_ls2_vs_ls3)
 ```
 
 
-```{r}
-
-### Code chunk not evaluated in this instance
+```{r eval=FALSE}
 ego_prom_genes_ls2_vs_ls3_smad2enriched <- enrichGO(gene = (prom_genes_ls2_vs_ls3_smad2enriched %>% filter(!geneId %in% ambi_ls2_vs_ls3) %>% dplyr::select(geneId) %>% unlist(use.names = FALSE)), org.Hs.eg.db, ont = "BP", pAdjustMethod = "BH", readable = TRUE)
-
-
 ```
 
-The results below can be a little misleading, since the list of enriched GO Terms is derived from a list of genes which is only 2 in number. Hence, the miniscule number of genes (2) forming the denominator, compared to the background set, whose denominator is 18,493, will skew the results of the enrichment analysis. The above enrichment analysis, therefore, would not be deemed accurate.
-
+The results below can be a little misleading, since the list of enriched GO Terms is derived from a list of genes which is only very small (only two genes). In addition, one of the genes is Smad2 itself (suggesting a degree of autoregulation, since Smad2 is binding to itself). Hence, the miniscule number of genes forming the denominator, compared to the background set, whose denominator is 18,493, will skew the results of the enrichment analysis. The above enrichment analysis, therefore, would not be deemed valid.
 
 ```{r}
 
 ego_prom_genes_ls2_vs_ls3_smad2enriched@result %>% 
   as_tibble() %>% 
   arrange(p.adjust, desc(Count) , desc(GeneRatio))  %>% 
-  filter(p.adjust < 0.05) %>%  
-  dplyr::select(Description, p.adjust, GeneRatio, BgRatio, geneID)
+  filter(p.adjust < 0.05) %>% 
+  dplyr::select(Description, p.adjust, GeneRatio, BgRatio, geneID, everything())
 
 ```
 
 #### GO terms enriched in Smad3-exclusive differentially enriched peaks
 
-The following is the list of genes that was passed through the function for the GO Term analysis, after filtering out the ambiguous genes.
+The following is the list of genes corresponding to Smad3-exclusive differential peaks that was passed through the function for the GO Term analysis, after filtering out the ambiguous genes.
 
 ```{r}
 prom_genes_ls2_vs_ls3_smad3enriched %>% filter(!geneId %in% ambi_ls2_vs_ls3)
 ```
 
 
-```{r eval=TRUE, results='hide'}
+```{r eval=FALSE}
 ego_prom_genes_ls2_vs_ls3_smad3enriched <- enrichGO(gene = (prom_genes_ls2_vs_ls3_smad3enriched %>%
                                                               filter(!geneId %in% ambi_ls2_vs_ls3) %>%
                                                               dplyr::select(geneId) %>% unlist(use.names = FALSE)), org.Hs.eg.db, ont = "BP", pAdjustMethod = "BH", readable = TRUE)
 
 ```
 
-The results of the Smad3 analysis can be deemed to be somewhat more accurate as compared to the Smad2 analysis, due to the comparatively longer list of non-ambiguous genes (1576).
+The results of the Smad3 analysis can be deemed to be somewhat more accurate as compared to the Smad2 analysis, due to the comparatively longer list of input genes (1576).
 
 ```{r}
 ego_prom_genes_ls2_vs_ls3_smad3enriched@result %>%
    as_tibble() %>%
    arrange(p.adjust, desc(Count) , desc(GeneRatio))  %>%
    filter(p.adjust < 0.05) %>%
-   dplyr::select(Description, p.adjust, GeneRatio, BgRatio, geneID)
+   dplyr::select(Description, p.adjust, GeneRatio, BgRatio, geneID, everything())
 
 ```
 
@@ -327,13 +358,80 @@ dotplot(ego_prom_genes_ls2_vs_ls3_smad3enriched) +
   theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
 ```
 
+### Comparing the output GO terms {#ls2-vs-ls3-go-comp}
+
+A list of GO term descriptions was extracted from the results table of the GO enrichment analysis for each condition, and these terms were compared across conditions.
+
+Extracting GO terms from Smad2-enriched differential peaks:
+
+```{r}
+terms_prom_genes_ls2_vs_ls3_smad2enriched <- ego_prom_genes_ls2_vs_ls3_smad2enriched@result %>% # creating a vector
+  dplyr::select(Description) %>% 
+  unlist(use.names = FALSE)  # 
+
+terms_prom_genes_ls2_vs_ls3_smad2enriched %>%  # visualising the vector as a dataframe due to better printing properties in R notebooks
+   enframe() %>% 
+  dplyr::select(value) %>% 
+  dplyr::rename(go_term = value)
+```
+
+Extracting GO terms from Smad3-enriched differential peaks:
+
+```{r}
+terms_prom_genes_ls2_vs_ls3_smad3enriched <- ego_prom_genes_ls2_vs_ls3_smad3enriched@result %>% 
+  dplyr::select(Description) %>% 
+  unlist(use.names = FALSE)
+
+terms_prom_genes_ls2_vs_ls3_smad3enriched %>% 
+  enframe() %>% 
+  dplyr::select(value) %>% 
+  dplyr::rename(go_term = value)
+
+```
+
+The following Venn diagram illustrates the amount of overlap between the two sets of GO terms for Smad2-enriched differential peaks and the Smad3-enriched differential peaks:
+
+```{r}
+ggVennDiagram::ggVennDiagram(x = list("Smad2" = terms_prom_genes_ls2_vs_ls3_smad2enriched, "Smad3" = terms_prom_genes_ls2_vs_ls3_smad3enriched))
+```
+
+
+The following are the biological processes in which both the Smad2 and Smad3 axes are involved (for the LS2 vs LS3 comparison). There were 203 such terms.
+
+```{r}
+intersect(terms_prom_genes_ls2_vs_ls3_smad2enriched, terms_prom_genes_ls2_vs_ls3_smad3enriched) %>% 
+  enframe() %>% 
+  dplyr::select(value) %>% 
+  dplyr::rename(go_term = value)
+```
+
+The following GO terms occur in Smad2-enriched differential peaks, but not in the Smad3-enriched differential peaks. There were only eight of these.
+
+```{r}
+setdiff(terms_prom_genes_ls2_vs_ls3_smad2enriched, terms_prom_genes_ls2_vs_ls3_smad3enriched) %>%   enframe() %>% 
+  dplyr::select(value) %>% 
+  dplyr::rename(go_term = value)
+```
+
+The following GO terms occur in Smad3-enriched differential peaks, but not in the Smad2-enriched differential peaks. There were around 5,508 of these terms.
+
+```{r}
+setdiff(terms_prom_genes_ls2_vs_ls3_smad3enriched, terms_prom_genes_ls2_vs_ls3_smad2enriched) %>%   enframe() %>% 
+  dplyr::select(value) %>% 
+  dplyr::rename(go_term = value)
+```
+
+```{r echo = FALSE, results="hide"}
+save(list = ls(), file = "treated-differential_binding.RData")
+```
+
 ---
 
-## LAP-Smad2 vs native-Smad3
+## LAP Smad2 vs Native Smad3
 
 ### Creating GRanges objects from bedgraph files
 
-```{r ls2-vs-ns3-creating-GRanges-from-bedgraph-filesE}
+```{r ls2-vs-ns3-creating-GRanges-from-bedgraph-files}
 
 bed_ls2_vs_ns3_smad2enriched <- read_tsv("./treated-diffpeak_results/diff_lap-smad2_vs_native-smad3_c3.0_cond1.bed", skip = 1, col_names = c("chrom", "start", "end", "name", "log10_likelihood_ratio"))
 
@@ -361,28 +459,6 @@ ap_ls2_vs_ns3_smad3enriched <- annotatePeak(peak = ls2_vs_ns3_smad3enriched, TxD
 
 ap_ls2_vs_ns3_bothenriched <- annotatePeak(peak = ls2_vs_ns3_bothenriched, TxDb = TxDb, annoDb = "org.Hs.eg.db")
 ```
-### Looking at the percentage of promoter-proximal peaks
-
-
-```{r}
-plotAnnoPie(ap_ls2_vs_ns3_smad2enriched)
-title(main = "LAP-Smad2 vs native-Smad3\n Smad2-enriched\n Differential Peaks", line = -4, adj = 0)
-```
-
-
-```{r}
-plotAnnoPie(ap_ls2_vs_ns3_smad3enriched)
-title(main = "LAP-Smad2 vs LAP-Smad3\n Smad3-enriched\n Differential Peaks", line = -4, adj = 0)
-```
-
-
-
-```{r}
-plotAnnoPie(ap_ls2_vs_ns3_bothenriched)
-title(main = "LAP-Smad2 vs LAP-Smad3\n Non-enriched\n Differential Peaks", line = -4, adj = 0)
-```
-
-
 
 ### Creating tibbles from peak annotation data
 
@@ -399,6 +475,40 @@ df_ls2_vs_ns3_bothenriched <- AnnotationDbi::as.data.frame(ap_ls2_vs_ns3_bothenr
   dplyr::select(seqnames, start, end, width, annotation, GENENAME, log10_LR, SYMBOL, geneId, ENSEMBL, everything())
 
 ```
+
+
+
+
+### Looking at the percentage of promoter-proximal peaks {#ls2-vs-ns3-prom-prox}
+
+
+The total number of differential Smad2-enriched peaks is given below. This was a higher number as compared to the differential Smad2-enriched peaks for the LS2 vs LS3 comparison (which equalled 42).
+
+```{r}
+df_ls2_vs_ns3_smad2enriched %>% 
+  tally()
+```
+
+The percentage of promoter-proximal peaks was (`r 19.93 + 4.47 + 3.78`%), which was lower as compared to that of the differential Smad2-enriched peaks for the LS2 vs LS3 comparison (which equalled 49.9%). This might be explained by the higher total number of differential Smad2-enriched peaks for the LS2 vs NS3 comparison 
+
+```{r}
+plotAnnoPie(ap_ls2_vs_ns3_smad2enriched)
+title(main = "LAP Smad2 vs Native Smad3\n Smad2-enriched\n Differential Peaks", line = -4, adj = 0)
+```
+
+
+```{r}
+plotAnnoPie(ap_ls2_vs_ns3_smad3enriched)
+title(main = "LAP Smad2 vs LAP Smad3\n Smad3-enriched\n Differential Peaks", line = -4, adj = 0)
+```
+
+
+
+```{r}
+plotAnnoPie(ap_ls2_vs_ns3_bothenriched)
+title(main = "LAP Smad2 vs LAP Smad3\n Non-enriched\n Differential Peaks", line = -4, adj = 0)
+```
+
 
 ### Extracting unique list of genes containing promoter-proximal peaks
 
@@ -424,7 +534,7 @@ prom_genes_ls2_vs_ns3_bothenriched <-  df_ls2_vs_ns3_bothenriched %>% filter(str
 
 #### Genes containing promoter-proximal differentially-enriched Smad2 peaks
 
-There were around 50 genes containing promoter-proximal differentially-enriched Smad2 peaks for the LAP-Smad2 vs native-Smad3 comparison. This might be the result of the anti-LAP 
+There were around 50 genes containing promoter-proximal differentially-enriched Smad2 peaks for the LS2 vs NS3 comparison.
 
 ```{r}
 prom_genes_ls2_vs_ns3_smad2enriched
@@ -451,14 +561,14 @@ save(list = ls(), file = "treated-differential_binding.RData")
 ```
 
 
-### Performing set operations on LAP-Smad2 vs native-Smad3 gene lists
+### Performing set operations on LAP Smad2 vs native Smad3 gene lists
 
 
 #### Genes common to both the Smad2-differentially enriched peak set and the Smad3-differentially enriched peak set
 
 
 ```{r}
-intersect(prom_genes_ls2_vs_ns3_smad2enriched$GENENAME, prom_genes_ls2_vs_ns3_smad3enriched$GENENAME) %>% # finding common peaks between LAP-Smad2 and LAP-Smad3
+intersect(prom_genes_ls2_vs_ns3_smad2enriched$GENENAME, prom_genes_ls2_vs_ns3_smad3enriched$GENENAME) %>% # finding common peaks between LAP Smad2 and LAP Smad3
   tibble::enframe(name = "No.", value = "Promoter-proximal peak annotations") %>% 
   tidyr::drop_na()
 ```
@@ -468,7 +578,7 @@ intersect(prom_genes_ls2_vs_ns3_smad2enriched$GENENAME, prom_genes_ls2_vs_ns3_sm
 
 
 ```{r}
-intersect(prom_genes_ls2_vs_ns3_smad2enriched$GENENAME, prom_genes_ls2_vs_ns3_bothenriched$GENENAME) %>% # finding common peaks between LAP-Smad2 and LAP-Smad3
+intersect(prom_genes_ls2_vs_ns3_smad2enriched$GENENAME, prom_genes_ls2_vs_ns3_bothenriched$GENENAME) %>% # finding common peaks between LAP Smad2 and LAP Smad3
   tibble::enframe(name = "No.", value = "Promoter-proximal peak annotations") %>% 
   tidyr::drop_na()
 ```
@@ -478,7 +588,7 @@ intersect(prom_genes_ls2_vs_ns3_smad2enriched$GENENAME, prom_genes_ls2_vs_ns3_bo
 
 
 ```{r}
-intersect(prom_genes_ls2_vs_ns3_smad3enriched$GENENAME, prom_genes_ls2_vs_ns3_bothenriched$GENENAME) %>% # finding common peaks between LAP-Smad2 and LAP-Smad3
+intersect(prom_genes_ls2_vs_ns3_smad3enriched$GENENAME, prom_genes_ls2_vs_ns3_bothenriched$GENENAME) %>% # finding common peaks between LAP Smad2 and LAP Smad3
   tibble::enframe(name = "No.", value = "Promoter-proximal peak annotations") %>% 
   tidyr::drop_na()
 
@@ -515,9 +625,9 @@ save(list = ls(), file = "treated-differential_binding.RData")
 
 ### GO term enrichment analysis
 
-#### GO terms enriched in Smad2-exclusive differentially enriched peaks
+#### GO terms enriched in Smad2-exclusive differentially enriched peaks {#ls2-vs-ns3-smad2-prom-disamb}
 
-The following is the list of genes that was passed through the function for the GO Term analysis, after filtering out the ambiguous genes. This list of genes was considerably longer (n = 37) for the the current comparison, (i.e., LAP-Smad2 vs native-Smad3), as opposed to the corresponding list of genes (n = 2) for the previous comparison (LAP-Smad2 vs LAP-Smad3).
+The following is the list of genes that was passed through the function for the GO Term analysis, after filtering out the ambiguous genes. This list of genes was considerably longer (n = 41) for the the current comparison, (i.e., LS2 vs NS3), as opposed to the corresponding list of genes (n = 2) for the previous comparison (LS2 vs LS3).
 
 ```{r}
 
@@ -532,7 +642,6 @@ prom_genes_ls2_vs_ns3_smad2enriched %>% filter(!geneId %in% ambi_ls2_vs_ns3)
 ego_prom_genes_ls2_vs_ns3_smad2enriched <- enrichGO(gene = (prom_genes_ls2_vs_ns3_smad2enriched %>% filter(!geneId %in% ambi_ls2_vs_ns3) %>% dplyr::select(geneId) %>% unlist(use.names = FALSE)), org.Hs.eg.db, ont = "BP", pAdjustMethod = "BH", readable = TRUE)
 
 ```
-
 
 No GO Terms were found to be differentially enriched in this list of genes.
 
@@ -571,7 +680,7 @@ ego_prom_genes_ls2_vs_ns3_smad3enriched@result %>%
   filter(p.adjust < 0.05) %>%  
   dplyr::select(Description, p.adjust, GeneRatio, BgRatio, geneID)
 ```
-Similar to the LAP-Smad2 versus LAP-Smad3 comparison, GO terms related to regulation of GTPase activity were once again present among the most enriched. However, terms related to cell morphogenesis, migration, cellular adhesion and cytoskeletal organisation and junction regulation also featured in the list of most-enriched GO terms. These GO terms were significantly different from those found for the LAP-Smad2 versus LAP-Smad3 comparison.
+Similar to the LS2 vs LS3 comparison, GO terms related to regulation of GTPase activity were once again present among the most enriched. However, terms related to cell morphogenesis, migration, cellular adhesion and cytoskeletal organisation and junction regulation also featured in the list of most-enriched GO terms. These GO terms were significantly different from those found for the LS2 vs LS3 comparison.
 
 ```{r}
 dotplot(ego_prom_genes_ls2_vs_ns3_smad3enriched) +
@@ -579,8 +688,153 @@ dotplot(ego_prom_genes_ls2_vs_ns3_smad3enriched) +
   theme(plot.title = element_text(hjust = 0.8, size = 15), axis.text.y = element_text(size = 7))
 ```
 
+### Comparing the output GO terms {#ls2-vs-ns3-go-comp}
+
+
+```{r}
+terms_prom_genes_ls2_vs_ns3_smad2enriched <- ego_prom_genes_ls2_vs_ns3_smad2enriched@result %>% 
+  dplyr::select(Description) %>%
+  unlist(use.names = FALSE)
+```
+
+There are far more GO terms for the Smad2-enriched peaks in the LS2 vs NS3 comparison (808), as compared to those for the LS2 vs LS3 comparison (211).
+
+```{r}
+terms_prom_genes_ls2_vs_ns3_smad2enriched %>% 
+   enframe() %>%  
+  dplyr::select(value) %>% 
+  dplyr::rename(go_term = value)
+```
+
+```{r}
+terms_prom_genes_ls2_vs_ns3_smad3enriched <- ego_prom_genes_ls2_vs_ns3_smad3enriched@result %>% 
+  dplyr::select(Description) %>% 
+  unlist(use.names = FALSE)
+```
+
+Comparitively speaking, the GO terms for the Smad3-enriched peaks in the LS2 vs NS3 comparison are relatively similar in number (5035), as compared to those for the LS2 vs LS3 comparison (5711).
+
+```{r}
+terms_prom_genes_ls2_vs_ns3_smad3enriched %>% 
+   enframe() %>% 
+  dplyr::select(value) %>% 
+  dplyr::rename(go_term = value)
+
+```
+The following Venn diagram illustrates the amount of overlap between the two sets of GO terms for Smad2-enriched differential peaks and the Smad3-enriched differential peaks, for the LS2 vs NS3 comparison:
+
+```{r}
+ggVennDiagram::ggVennDiagram(x = list("Smad2" = terms_prom_genes_ls2_vs_ns3_smad2enriched, "Smad3" = terms_prom_genes_ls2_vs_ns3_smad3enriched))
+```
+
+
+As we can see, there is much more of an overlap between Smad2 and Smad3 for the LS2 vs NS3 comparison (14.68%), as compared to the LS2 vs LS3 comparison (3.55%).
+
+The following were the biological processes in which both the Smad2 and Smad3 axes are involved (for the LS2 vs NS3 comparison).
+
+```{r}
+intersect(terms_prom_genes_ls2_vs_ns3_smad2enriched, terms_prom_genes_ls2_vs_ns3_smad3enriched) %>% 
+  enframe() %>% 
+  dplyr::select(value) %>% 
+  dplyr::rename(go_term = value)
+```
+
+There were around 60 processes which appear to be regulated by the Smad2 axis, without the involvement of the Smad3-bound axis, for the LS2 vs NS3 comparison.
+
+```{r}
+setdiff(terms_prom_genes_ls2_vs_ns3_smad2enriched, terms_prom_genes_ls2_vs_ns3_smad3enriched) %>%   enframe() %>% 
+  dplyr::select(value) %>% 
+  dplyr::rename(go_term = value)
+```
+
+The following were the processes which appear to be regulated by the Smad3 axis, without the involvement of the Smad2 axis. There were around 4,287 of these processes.
+
+```{r}
+setdiff(terms_prom_genes_ls2_vs_ns3_smad3enriched, terms_prom_genes_ls2_vs_ns3_smad2enriched) %>%   enframe() %>% 
+  dplyr::select(value) %>% 
+  dplyr::rename(go_term = value)
+```
+
+The number of GO terms enriched in Smad2-enriched differential peaks are far greater for the LS2 vs NS3 comparison, as opposed to the LS2 vs LS3 comparison.
+
+Number of GO terms enriched in Smad2-enriched differential peaks for the LS2 vs LS3 comparison:
+
+```{r}
+terms_prom_genes_ls2_vs_ls3_smad2enriched %>% length()
+```
+
+Number of GO terms enriched in Smad2-enriched differential peaks for the LS2 vs NS3 comparison:
+
+```{r}
+terms_prom_genes_ls2_vs_ns3_smad2enriched %>% length()
+```
+
+Almost all of the GO terms for Smad2 differential peaks in the LS2 vs LS3 comparison ("A" in the Venn diagram below) were also present in those for the LS2 vs NS3 comparison ("B" in the Venn diagram).
+
+```{r}
+ggVennDiagram::ggVennDiagram(x = list("LS2_vs_LS3_Smad2" = terms_prom_genes_ls2_vs_ls3_smad2enriched, "LS2_vs_NS3_Smad2" = terms_prom_genes_ls2_vs_ns3_smad2enriched), category.names = c("A", "B"))
+```
+
+
+The following is the list of the common terms among the two Smad2-enriched data sets.
+
+```{r}
+intersect(terms_prom_genes_ls2_vs_ls3_smad2enriched, terms_prom_genes_ls2_vs_ns3_smad2enriched) %>%   
+  enframe() %>% 
+  dplyr::select(value) %>% 
+  dplyr::rename(go_term = value)
+```
+
+These are the three terms which are not common among the two comparisons:
+
+```{r}
+setdiff(terms_prom_genes_ls2_vs_ls3_smad2enriched, terms_prom_genes_ls2_vs_ns3_smad2enriched)
+```
+
+
+There were a surprising number of GO terms in common among the LS2 vs NS3 Smad2 peaks ("A" in the Venn diagram) and the LS2 vs LS3 Smad3 peaks ("B" in the Venn diagram):
+
+
+```{r}
+ggVennDiagram::ggVennDiagram(x = list("A" = terms_prom_genes_ls2_vs_ns3_smad2enriched, "B" = terms_prom_genes_ls2_vs_ls3_smad3enriched))
+```
+
+
+```{r}
+intersect(terms_prom_genes_ls2_vs_ns3_smad2enriched, terms_prom_genes_ls2_vs_ls3_smad3enriched) %>% length()
+```
+
+
+Almost all of the GO terms contained in the LS2 vs LS3 Smad2-enriched peaks (labelled as "A" in the Venn diagram below) were also present in the LS2 vs NS3 Smad3-enriched peaks (labelled as "B" in the Venn diagram below) .
+
+```{r}
+ggVennDiagram::ggVennDiagram(x = list("A" = terms_prom_genes_ls2_vs_ls3_smad2enriched, "B" = terms_prom_genes_ls2_vs_ns3_smad3enriched))
+```
+
+
+
+```{r}
+intersect(terms_prom_genes_ls2_vs_ls3_smad2enriched, terms_prom_genes_ls2_vs_ns3_smad3enriched) %>% length()
+```
 
 ```{r echo = FALSE, results="hide"}
 save(list = ls(), file = "treated-differential_binding.RData")
 ```
 
+## General Comments on Results
+
+There are differences between the differential peak-calling results for the LS2 vs LS3 and the LS2 vs NS3 comparisons respectively, especially with respect to the number of peaks which appear differentially-enriched for Smad2. The number of Smad2-enriched differential peaks is quite low for the [LS2 vs LS3 comparison](#ls2-vs-ls3-prom-prox), only 42. In contrast, the number of Smad2-enriched differential peaks for the [LS2 vs NS3 comparison](#ls2-vs-ns3-prom-prox) is 291.
+
+It is quite possible that this initial difference in numbers probably resulted in the differences between the results from the two sets of comparisons. Hence, a small number of overall Smad2-enriched differential peaks resulted in a small number of promoter-proximal differential peaks. This would in turn lead to a lesser number of genes exclusively containing promoter-proximal Smad2-enriched differential peaks. For instance, for the LS2 vs LS3 comparison, the genes corresponding to Smad2-enriched differential peaks after removal of the "ambiguous" genes were [only two](#smad2-prom-disamb). On the other hand, those for the LS2 vs NS3 comparison were [41 in number](#ls2-vs-ns3-smad2-prom-disamb).
+
+This difference in gene number spilled over into a difference in the number of GO terms that were obtained from the analyses of those sets of genes. For instance, for the [LS2 vs LS3 comparison](#ls2-vs-ls3-go-comp), the number of GO terms obtained for Smad2-enriched differential peaks were 211. On the other hand, for the [LS2 vs NS3 comparison](#ls2-vs-ns3-go-comp), that number was 808.
+
+The low number of Smad2-enriched differential peaks in the LS2 vs LS3 comparison can probably be attributed to a difference in the promiscuity of the antibodies used to generate the sample. It is likely that the anti-GFP antibody used to target the Smad3-GFP fusion protein for the LAP Smad3 sample binds very promiscuously, resulting higher-amplitude absolute peaks for Smad3. These higher-amplitude absolute Smad3 peaks, while being compared to the overlapping Smad2 absolute peaks during differential peak analysis, will dominate the overlapping Smad2 peaks resulting in more Smad3-enriched peaks as compared to Smad2-enriched peaks.
+
+On the other hand, the less promiscuous native Smad3 antibody results in comparatively smaller Smad3 absolute peak magnitudes, which do not necessarily dominate the overlapping absolute Smad2 peaks, thereby increasing the overall number of Smad2-enriched differential peaks being called.
+
+We deemed it better to use the native Smad3 differential peak comparisons for the use of the substrate.
+
+# Future analyses
+
+Further work would involve integrating data from RNA-seq analysis of TGF beta-treated cells with the above ChIP-seq data analysis. Finding the relationship between promoter-proximal differential peaks for Smad2 and Smad3 and the genes which show expression changes will allow us to better understand the differences between the axes. 
